@@ -13,7 +13,7 @@ using namespace std;
 
 int main() {
 
-  //oren
+//test 17:07
 	Game reversi = Game();
 	reversi.run();
 
