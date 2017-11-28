@@ -42,9 +42,8 @@ public:
 	 * @return - size of matrix.
 	 */
 	int get_size() const;
-
-	Board coppy_board();
-
+	int x_points() const;
+	int o_points() const;
 private:
 	int size;
 	char** matrix;

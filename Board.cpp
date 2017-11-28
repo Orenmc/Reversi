@@ -61,18 +61,28 @@ int Board::get_size() const {
 	return size;
 }
 
-Board Board::coppy_board() {
-
-	int size = this->get_size();
-	Board board_copy =  Board(size);
-
-	for(int i = 0; i < size ; i++) {
-		for(int j = 0; j < size; j++){
-			board_copy.set_matrix(i,j,this->get_cell(i,j));
+int Board::x_points() const {
+	int points=0;
+	for(int i = 0; i< size; i++){
+		for(int j=0; j<size; j++) {
+			if(matrix[i][j] == 'X'){
+				points++;
+			}
 		}
 	}
-	return board_copy;
+	return points;
+}
 
+int Board::o_points() const {
+	int points=0;
+	for(int i = 0; i< size; i++){
+		for(int j=0; j<size; j++) {
+			if(matrix[i][j] == 'O'){
+				points++;
+			}
+		}
+	}
+	return points;
 }
 
 void Board::init_matrix() {

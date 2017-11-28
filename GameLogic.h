@@ -39,12 +39,12 @@ public:
 	/**
 	 * print board.
 	 */
-	void print_board() const;
+	void print_board();
 	/**
 	 * sets players symbol on board.
 	 * @param - int row - row to set on board, int col - col to set on board, Player player - player to put symbol
 	 */
-	void set_on_board(int row, int col, Player* player);
+	void set_on_board(Board* b,int row, int col, Player* player);
 	/**
 	 * get player number i (starting from 1).
 	 * @param int i - is number of player
@@ -59,12 +59,12 @@ public:
 	 * @param - vector<points &end - to each start point, save in the same index the point end
 	 * @param - vector<int> &v3 - to each start point, save in the same index the number of flops between p start and point end
 	 */
-	void find_options(Player* player, vector<Point>& starts, vector<Point>& end, vector<int>& v3) const;
+	void find_options(Board* b,Player* player, vector<Point>& start, vector<Point>& end,vector<int>& flips) const;
 	/**
 	 * for 2 points, and player - change all other player symbols between them.
  	 * @param Point p1 - start point ,Point p2 - end point, Player* player point.
  	 */
-	void change_board_point_to_point(Point p1, Point p2, Player* p);
+	void change_board_point_to_point(Board* b,Point p1, Point p2, Player* p);
     /**
      *
      * @param it
@@ -72,7 +72,7 @@ public:
      * @param p2
      * @return
      */
-    int check_point_for_AI(Point p,Player p1, Player p2);
+    int check_point_for_AI(Point p, vector<Point> start_points, vector<Point> end_points, vector<int> flip_ctr);
 	/**
 	 * for a given point change all point in vector<Point> how match.
 	 * @param Playe* p - pointer to player, Point p_choose -point to change
@@ -80,7 +80,7 @@ public:
 	 * @param - vector<points &end - to each start point, save in the same index the point end
 	 * @param - vector<int> &v3 - to each start point, save in the same index the number of flops between p start and point end
 	 */
-	void change_all_points(Player *p, Point p_choose, vector<Point> start_points, vector<Point> end_points, vector<int> flip_ctr);
+	void change_all_points(Board* b,Player *p, Point p_choose, vector<Point> start_points, vector<Point> end_points, vector<int> flip_ctr);
 	/**
 	 * for a specific point find total flip number.
 	 *@param Point p - point
@@ -94,6 +94,11 @@ public:
 	 * @return true - if full, else false
 	 */
 	bool board_full();
+	int player1_points(Board* b);
+	int player2_points(Board* b);
+	int player1_points();
+	int player2_points();
+	void print_board(Board* b);
 
 private:
 	/**

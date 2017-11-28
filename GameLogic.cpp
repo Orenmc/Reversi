@@ -41,8 +41,8 @@ void GameLogic::set_should_stop(bool shouldStop) {
 	should_stop = shouldStop;
 }
 
-void GameLogic::print_board() const {
-	this->board->print_matrix();
+void GameLogic::print_board() {
+	this->print_board(this->board);
 }
 
 
@@ -50,16 +50,16 @@ Player* GameLogic::get_player(int i) const {
 	return players[i-1];
 }
 
-void GameLogic::set_on_board(int row, int col, Player* player) {
-	this->board->set_matrix(row, col ,player->getSymbol());
+void GameLogic::set_on_board(Board* b,int row, int col, Player* player) {
+	b->set_matrix(row, col ,player->getSymbol());
 }
 
 int GameLogic::play_one_turn(Player* p1) {
 	vector<Point> start_points, end_points;
 	vector<int> flip_number;
 
-		cout << p1->getName() << " - '" << p1->getSymbol() << "' turn" <<endl;
-	this->find_options(p1,start_points,end_points,flip_number);
+	cout << p1->getName() << " - '" << p1->getSymbol() << "' turn" <<endl;
+	this->find_options(this->board,p1,start_points,end_points,flip_number);
 	//order all points to print
 	if (start_points.empty() == true) {
 		return 1;
@@ -84,56 +84,51 @@ int GameLogic::play_one_turn(Player* p1) {
 		 		cout << "choose column index, ";
 		 		int col = InputTest::get_index_from_user(this->board->get_size());
 		 		if (is_point_in_set(Point(row-1,col-1),s) == true) {
-		 			change_all_points(p1,Point(row-1,col-1),start_points,end_points,flip_number);
+		 			change_all_points(this->board,p1,Point(row-1,col-1),start_points,end_points,flip_number);
+		 			cout << p1->getName() << " Played Point: " << Point(row-1,col-1) <<endl;
 		 			break;
 		 		}
 		 		cout << "not good option - try again."<< endl;
 		 	 } // if AI plays
 	 } else if(p1->get_type() == "AI") {
-		 Point best_point = Point(-1,-1);
-		 int temp =0,max= 0;
+		 int size = this->board->get_size();
+		 int temp, min;
+		 temp = min = size*size; //initialized min to be max diff between 'x' to 'o' (palyer1, and AI)
+
+		 Point best_point = Point(-1,-1); //init Point as -1,-1 (out of scope - to know if cannot find best play);
+
 
          // set of points that AI can play
 		 for (std::set<Point>::iterator it=s.begin(); it!=s.end(); ++it) {
-
-
-
-/*
- *
- *
- *
- */
-        //     temp = check_point_for_AI(Point *it,Palyer p1, Player p2);
-
-			 temp = count_flops_for_spesific_point(*it,start_points,flip_number);
-			 if (temp > max){
+            temp = check_point_for_AI (*it,start_points,end_points,flip_number);
+			 if (temp < min){
 				 best_point = *it;
-				 max = temp;
+				 min = temp;
 			 }
 		 }
-			change_all_points(p1,best_point,start_points,end_points,flip_number);
-
+		 change_all_points(this->board,this->players[1],best_point,start_points,end_points,flip_number);
+		 cout << players[1]->getName() << " Played Point: " << best_point <<endl;
 	 }
 
 
+	 // return 0 - means AI played.
 	return 0;
 
 }
 
-void GameLogic::find_options(Player* player, vector<Point>& start, vector<Point>& end,
+void GameLogic::find_options(Board* b,Player* player, vector<Point>& start, vector<Point>& end,
 		vector<int>& flips) const {
 
-
-	int size = this->board->get_size();
+	int size = b->get_size();
 
 	for (int row = 0; row < size; row++) {
 		for (int col = 0; col < size; col++ ) {
 
 			Point p = Point(-1,-1);
-			if (this->board->get_cell(row,col) == ' ') {
+			if (b->get_cell(row,col) == ' ') {
 				//check 8 directions for each dir -> save start point, end point and flip count
 				int flip_ctr = 0;
-				p = this->check_right(row,col,player,flip_ctr);
+				p = check_right(row,col,player,flip_ctr);
 				if (p.valid_point() == true) {
 					start.push_back(Point(row,col));
 					end.push_back(p);
@@ -187,8 +182,8 @@ void GameLogic::find_options(Player* player, vector<Point>& start, vector<Point>
 	}
 }
 
-void GameLogic::change_board_point_to_point(Point p1, Point p2, Player* player) {
-	this->set_on_board(p1.getX(),p1.getY(),player);
+void GameLogic::change_board_point_to_point(Board* b,Point p1, Point p2, Player* player) {
+	this->set_on_board(b,p1.getX(),p1.getY(),player);
 	int x_s = p1.getX();
 	int y_s = p1.getY();
 	int x_e = p2.getX();
@@ -197,41 +192,41 @@ void GameLogic::change_board_point_to_point(Point p1, Point p2, Player* player) 
 	if(x_s == x_e) {
 		if(y_s < y_e){
 			for(int i = y_s + 1; i < y_e; i++){
-				set_on_board(x_s,i,player);
+				set_on_board(b,x_s,i,player);
 			}
 		} else {
 			for(int i = y_s -1; i > y_e; i--){
-				set_on_board(x_s,i,player);
+				set_on_board(b,x_s,i,player);
 			}
 		}
 	} else if(y_s == y_e) {
 		if(x_s < x_e){
 			for(int i = x_s + 1; i < x_e; i++){
-				set_on_board(i,y_s,player);
+				set_on_board(b,i,y_s,player);
 			}
 		} else {
 			for(int i = x_s -1; i > x_e; i--){
-				set_on_board(i,y_s,player);
+				set_on_board(b,i,y_s,player);
 			}
 		}
 	} else if(x_s > x_e) {
 		if(y_s < y_e){
 			for(int i = x_s - 1, j = y_s + 1 ; i > x_e; i--,j++){
-				set_on_board(i,j,player);
+				set_on_board(b,i,j,player);
 			}
 		} else {
 			for(int i = x_s - 1, j = y_s - 1 ; i > x_e; i--,j--){
-				set_on_board(i,j,player);
+				set_on_board(b,i,j,player);
 			}
 		}
 	} else {
 		if(y_s < y_e){
 			for(int i = x_s + 1, j = y_s +1 ; i < x_e; i++,j++){
-				set_on_board(i,j,player);
+				set_on_board(b,i,j,player);
 			}
 		} else {
 			for(int i = x_s + 1, j = y_s - 1 ; i < x_e; i++,j--){
-				set_on_board(i,j,player);
+				set_on_board(b,i,j,player);
 			}
 		}
 
@@ -239,14 +234,18 @@ void GameLogic::change_board_point_to_point(Point p1, Point p2, Player* player) 
 
 }
 
-void GameLogic::change_all_points(Player* p, Point p_choose,
+void GameLogic::change_all_points(Board* b, Player* p, Point p_choose,
 		vector<Point> start_points, vector<Point> end_points,
 		vector<int> flip_ctr) {
+	/*
 	cout << p->getName() << " played: " << p_choose << endl;
 	p->add_points(1); // add 1 points to player
+	*/
 		 for (unsigned int i = 0; i < start_points.size(); i++) {
 			 if(start_points[i] == p_choose) {
-				 change_board_point_to_point(start_points[i],end_points[i],p);
+				 change_board_point_to_point(b,start_points[i],end_points[i],p);
+
+				 /*
 				 p->add_points(flip_ctr[i]); // ass points to player
 				 if(p->getSymbol() == 'O'){ //reduce points from second player
 					 this->get_player(1)->add_points(-(flip_ctr[i]));
@@ -254,6 +253,8 @@ void GameLogic::change_all_points(Player* p, Point p_choose,
 				 } else {
 					 this->get_player(2)->add_points(-(flip_ctr[i]));
 				 }
+
+				 */
 			 }
 		 }
 
@@ -273,7 +274,7 @@ const int GameLogic::count_flops_for_spesific_point(Point p, vector<Point> start
 
 bool GameLogic::board_full() {
 	int size = this->board->get_size();
-	if(this->players[0]->getPoints() + this->players[1]->getPoints() == size*size) {
+	if(this->board->x_points() + this->board->o_points() == size*size) {
 		return true;
 	}
 	return false;
@@ -463,6 +464,26 @@ Point GameLogic::check_up_left(int row, int col, Player* player,
 	return Point(-1,-1);
 }
 
+int GameLogic::player1_points(Board* b) {
+	return b->x_points();
+}
+
+int GameLogic::player2_points(Board* b) {
+	return b->o_points();
+}
+
+int GameLogic::player1_points() {
+	return player1_points(this->board);
+}
+
+int GameLogic::player2_points() {
+	return player2_points(this->board);
+}
+
+void GameLogic::print_board(Board* b) {
+	b->print_matrix();
+}
+
 Point GameLogic::check_down_left(int row, int col, Player* player,
 		int& flip_ctr) const {
 	int i = row + 1;
@@ -500,24 +521,53 @@ bool GameLogic::is_point_in_set(Point p, set<Point> s) {
 }
 
 
-int GameLogic::check_point_for_AI(Point p, Player p1, Player p2) {
+int GameLogic::check_point_for_AI(Point p, vector<Point> start_points, vector<Point> end_points, vector<int> flip_ctr) {
+	vector<Point> copy_start_points, copy_end_points;
+	vector<int> copy_flip_number;
+	int board_size = this->board->get_size();
 
-	vector<Point> start_points, end_points;
-	vector<int> flip_number;
-
-
-	Board b_copy = this->board->coppy_board();
-
-	b_copy.set_matrix(p.getX(),p.getY(),'O');
-
-	this->find_options(this->get_player(1),start_points,end_points,flip_number);
-		//order all points to print
-		if (start_points.empty() == true) {
-			return (this->get_player(1)->getPoints() - this->get_player(2)->getPoints());
+	//create a new "copy" board
+	Board* b_copy = new Board(board_size);
+	//copy all symbols
+	for(int i = 0; i < board_size ; i++) {
+		for(int j = 0; j < board_size; j++){
+			b_copy->set_matrix(i,j,this->board->get_cell(i,j));
 		}
+	}
+	//sets point p to copy matrix
+	this->change_all_points(b_copy,this->get_player(2),p,start_points,end_points,flip_ctr);
+	cout << p << "set on board" <<endl;
+	b_copy->print_matrix();
 
 
+	//find option for 1st player
+	this->find_options(b_copy,this->get_player(1),copy_start_points,copy_end_points,copy_flip_number);
 
 
+	//if no points - return this diff between 'X' to 'O'
+	if (copy_start_points.empty() == true) {
+		return (b_copy->x_points() - b_copy->o_points());
+	}
+	//enter all optional points to set - reduce duplicates
+	set<Point> s;
+	std::vector<Point>::iterator it1;
+	 for (it1=copy_start_points.begin(); it1!=copy_start_points.end(); ++it1) {
+		 s.insert(*it1);
+	 }
+
+//find best option for player 1 - if AI played this move
+	 Point best_point = Point(-1,-1);
+	 int temp =0,max= 0;
+	 for (std::set<Point>::iterator it=s.begin(); it!=s.end(); ++it) {
+		 temp = count_flops_for_spesific_point(*it,copy_start_points,copy_flip_number);
+		 if (temp > max){
+			 best_point = *it;
+			 max = temp;
+		 }
+	 }
+	 int test2 = b_copy->x_points() + 1 - b_copy->o_points() + 2*max;
+	 cout << endl << "is the best option for " << p << " is " << best_point << " with " << test2 <<" score"<<endl;
+
+
+	 return test2;
 }
-
