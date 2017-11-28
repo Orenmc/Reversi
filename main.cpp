@@ -13,7 +13,6 @@ using namespace std;
 
 int main() {
 
-//Snir
 	Game reversi = Game();
 	reversi.run();
 
