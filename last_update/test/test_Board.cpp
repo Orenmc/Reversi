@@ -11,7 +11,6 @@
 
 TEST(Test_Board,Test_init_Board){
 	Board* b = new Board(8);
-	b->print_matrix();
 	for(int i = 0 ; i < b->get_size() ; i++){
 		for(int j = 0 ; j < b->get_size(); j++){
 				EXPECT_EQ(b->get_cell(i,j),' ');
@@ -26,8 +25,8 @@ TEST(Test_Board,Test_Score_Player){
 	b->set_matrix(2,2,'X');
 	b->set_matrix(2,4,'O');
 	b->set_matrix(5,6,'O');
-	EXPECT_EQ(b->o_points(),4);
-	EXPECT_EQ(b->x_points(),3);
+	EXPECT_EQ(b->o_points(),2);
+	EXPECT_EQ(b->x_points(),1);
 	delete b;
 }
 
@@ -43,17 +42,18 @@ TEST(Test_Board,Test_Set_In_Board){
 TEST(Test_Board,Test_Point_To_Point){
 	Board* b = new Board(8);
 	b->set_matrix(2,2,'X');
-	b->set_matrix(7,7,'X');
+	b->set_matrix(4,4,'X');
 	Player* p = new Player("Player",'X');
 	Point p1(2,2);
-	Point p2(7,7);
+	Point p2(4,4);
+
 	GameLogic* g = new GameLogic(1,8);
 	g->change_board_point_to_point(b,p1,p2,p);
-	b->print_matrix();
 
-	for(int i,j = 1 ; i < b->get_size() ; i++,j++){
-				EXPECT_EQ(b->get_cell(i,j),'X');
-			}
-
+	for(int i=2; i< 5; i++){
+	EXPECT_EQ('X',b->get_cell(i,i));
+	}
 	delete b;
+	delete p;
+	delete g;
 }

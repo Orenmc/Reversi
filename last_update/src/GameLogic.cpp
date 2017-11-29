@@ -30,7 +30,17 @@ GameLogic::GameLogic(int chooise): should_stop(false) {
 
 
 }
+GameLogic::GameLogic(int chooise,int size): should_stop(false){
+	this->board = new Board(8);
+		this->players[0] = new HumanPlayer("player_1",'X');
+		this->players[1] = new HumanPlayer("player_2",'O');
 
+		this->board->set_matrix(this->board->get_size()/2 - 1,this->board->get_size()/2 - 1,'O');
+		this->board->set_matrix(this->board->get_size()/2,this->board->get_size()/2,'O');
+		this->board->set_matrix(this->board->get_size()/2,this->board->get_size()/2 - 1,'X');
+		this->board->set_matrix(this->board->get_size()/2 - 1,this->board->get_size()/2,'X');
+
+}
 
 GameLogic::~GameLogic() {
 	delete board;
@@ -573,5 +583,10 @@ int GameLogic::check_point_for_AI(Point p, vector<Point> start_points, vector<Po
 
 	 delete b_copy;
 	 return test;
+
+}
+
+void GameLogic::set_on_board(int row, int col, Player* player) {
+	this->board->set_matrix(row, col ,player->getSymbol());
 
 }

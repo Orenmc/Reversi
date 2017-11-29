@@ -21,6 +21,7 @@ class GameLogic {
 public:
 	GameLogic(int chooise);
 	virtual ~GameLogic();
+	GameLogic(int chooise,int size);
 	/**
 	 * play 1 turn for specific player.
 	 * @param - Player player
@@ -94,11 +95,18 @@ public:
 	 * @return true - if full, else false
 	 */
 	bool board_full();
+	/**
+	 * return number of points of player 1 ('x') - in spesific board
+	 */
 	int player1_points(Board* b);
+	/**
+	* return number of points of player 2 ('o') - in spesific board
+	*/
 	int player2_points(Board* b);
 	int player1_points();
 	int player2_points();
 	void print_board(Board* b);
+	void set_on_board(int row, int col, Player* player);
 
 private:
 	/**

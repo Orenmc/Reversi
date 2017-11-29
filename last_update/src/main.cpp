@@ -6,8 +6,7 @@
  *      user: cohenorx
  *      id: 305164295
  */
-
-#include "Game.h"
+#include "../include/Game.h"
 #include <iostream>
 using namespace std;
 
@@ -15,7 +14,6 @@ int main() {
 
 	Game reversi = Game();
 	reversi.run();
-
 	return 0;
 }
 

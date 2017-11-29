@@ -6,8 +6,6 @@
  */
 
 #include "../include/GameLogic.h"
-#include "../include/Player.h"
-#include "../include/Point.h"
 #include "gtest/gtest.h"
 #include <vector>
 
@@ -64,9 +62,39 @@ TEST(Test_GameLogic,Test_Find_Options_Empty_Board){
 	GameLogic* g = new GameLogic(1,8);
 	g->find_options(b,p, start_points, end_points, flip_number);
 
-	EXPECT_FALSE(start_points.size() == 0); //NEED TO CHANGE TO TRUE
-	EXPECT_FALSE(end_points.size() == 0); //NEED TO CHANGE TO TRUE
+	EXPECT_TRUE(start_points.size() == 0);
+	EXPECT_TRUE(end_points.size() == 0);
+	delete b;
+		delete p;
+		delete g;
 
+}
+TEST(Test_GameLogic,Test_number_of_flips_to_point){
+	vector<Point> start_points, end_points;
+	vector<int> flip_number;
+	GameLogic* g = new GameLogic(1,8);
+
+	g->set_on_board(0,0,g->get_player(1));
+	g->set_on_board(0,1,g->get_player(1));
+	g->set_on_board(0,2,g->get_player(1));
+	g->set_on_board(1,1,g->get_player(2));
+
+	start_points.push_back(Point(1,1));
+	start_points.push_back(Point(1,2));
+	start_points.push_back(Point(1,3));
+
+	flip_number.push_back(1);
+	flip_number.push_back(2);
+	flip_number.push_back(3);
+
+	int i = g->count_flops_for_spesific_point(Point(1,1),start_points,flip_number);
+	int k = g->count_flops_for_spesific_point(Point(1,2),start_points,flip_number);
+	int j = g->count_flops_for_spesific_point(Point(5,1),start_points,flip_number);
+
+	EXPECT_EQ(i,1);
+	EXPECT_EQ(j,0);
+	EXPECT_EQ(k,2);
+delete g;
 }
 
 TEST(Test_GameLogic,Test_Find_Options_Full_Board){
@@ -77,10 +105,15 @@ TEST(Test_GameLogic,Test_Find_Options_Full_Board){
 	vector<int> flip_number;
 	GameLogic* g = new GameLogic(1,8);
 	g->find_options(b,p, start_points, end_points, flip_number);
-
-	EXPECT_FALSE(start_points.size() == 0); //NEED TO CHANGE TO TRUE
-	EXPECT_FALSE(end_points.size() == 0); //NEED TO CHANGE TO TRUE
-
+	for(int i= 0; i<8;i++){
+		for(int j=0; j<8; j++){
+			b->set_matrix(i,j,'X');
+		}
+	}
+	EXPECT_TRUE(start_points.size() == 0);
+	EXPECT_TRUE(end_points.size() == 0);
+	delete b;
+		delete p;
+		delete g;
 }
-
 
