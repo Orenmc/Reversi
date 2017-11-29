@@ -1,10 +1,14 @@
-# user name	: cohenorx
-#name		:Oren Cohen
-# id 		:305164295
+# Snir Hazan
+# ID: 308045137
+# Oren Cohen
+# ID: 305164295
 
 a.out: compileAll
 	g++ *.o 
 	rm -f *.o
 
-compileAll: *.h *.cpp
-	g++ -c *.cpp
+compileAll: include/*.h src/*.cpp
+	g++ -Iinclude/ -c src/*.cpp
+
+run:
+	./a.out
