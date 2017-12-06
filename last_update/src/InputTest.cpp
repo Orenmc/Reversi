@@ -90,7 +90,7 @@ int InputTest::get_number_for_menu() {
 			index = get_number_from_user();
 			flag = true;
 		}
-		while (index < 1 || index > 2);
+		while (index < 1 || index > 3);
 
 		return index;
 }

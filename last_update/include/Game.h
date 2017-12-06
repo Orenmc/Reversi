@@ -12,6 +12,7 @@
 
 
 #include "GameLogic.h"
+#include "RemoteGameLogic.h"
 /**
  * Game is a class how can deal with running games.
  */

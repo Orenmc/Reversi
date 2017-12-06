@@ -16,18 +16,21 @@
 #include <set>
 #include <vector>
 #include "InputTest.h"
+#include "DummyPlayer.h"
+#include "RemotePlayer.h"
 
 class GameLogic {
 public:
 	GameLogic(int chooise);
 	virtual ~GameLogic();
+
 	GameLogic(int chooise,int size);
 	/**
 	 * play 1 turn for specific player.
 	 * @param - Player player
 	 * @return - int 0 if played, 1 if not
 	 */
-	int play_one_turn(Player* p1);
+	virtual int play_one_turn(Player* p1);
 	/**
 	 * check if game should stop.
 	 * @return - true stop, false continue
@@ -109,11 +112,7 @@ public:
 	void set_on_board(int row, int col, Player* player);
 
 private:
-	/**
-	 * check if Point is on set.
-	 * @return true if point in set, else false
-	 */
-	bool is_point_in_set(Point p, set<Point> s);
+
 	/**
 	 * for specific row,col check if specific symbol can be placed there
 	 * @param row,col - specific "point",
@@ -178,6 +177,14 @@ private:
 	 * @return (-1,-1) if not good point, else return the end point (that verify good cell)
 	 */
 	Point check_down_left(Board* b,int row, int col, Player* player, int &flip_ctr) const;
+
+protected:
+	/**
+	 * check if Point is on set.
+	 * @return true if point in set, else false
+	 */
+	bool is_point_in_set(Point p, set<Point> s);
+	void init_start_board();
 	bool should_stop;
 	Board *board;
 	Player *players[2];

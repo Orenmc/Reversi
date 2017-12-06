@@ -12,21 +12,20 @@
 
 GameLogic::GameLogic(int chooise): should_stop(false) {
 	this->board = new Board(InputTest::get_size_from_user());
-	this->players[0] = new HumanPlayer("player_1",'X');
+
 	switch(chooise){
 	case 1: {
+		this->players[0] = new HumanPlayer("player_1",'X');
 		this->players[1] = new HumanPlayer("player_2",'O');
 		break;
 	}
 	case 2: {
+		this->players[0] = new HumanPlayer("player_1",'X');
 		this->players[1] = new AIPlayer("computer",'O');
 		break;
 	}
 	}
-	this->board->set_matrix(this->board->get_size()/2 - 1,this->board->get_size()/2 - 1,'O');
-	this->board->set_matrix(this->board->get_size()/2,this->board->get_size()/2,'O');
-	this->board->set_matrix(this->board->get_size()/2,this->board->get_size()/2 - 1,'X');
-	this->board->set_matrix(this->board->get_size()/2 - 1,this->board->get_size()/2,'X');
+	init_start_board();
 
 
 }
@@ -589,4 +588,10 @@ int GameLogic::check_point_for_AI(Point p, vector<Point> start_points, vector<Po
 void GameLogic::set_on_board(int row, int col, Player* player) {
 	this->board->set_matrix(row, col ,player->getSymbol());
 
+}
+void GameLogic::init_start_board(){
+	this->board->set_matrix(this->board->get_size()/2 - 1,this->board->get_size()/2 - 1,'O');
+		this->board->set_matrix(this->board->get_size()/2,this->board->get_size()/2,'O');
+		this->board->set_matrix(this->board->get_size()/2,this->board->get_size()/2 - 1,'X');
+		this->board->set_matrix(this->board->get_size()/2 - 1,this->board->get_size()/2,'X');
 }
