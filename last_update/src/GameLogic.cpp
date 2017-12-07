@@ -10,6 +10,12 @@
 #include "../include/GameLogic.h"
 #include <iostream>
 
+GameLogic::GameLogic(){
+	this->board = new Board(0);
+	this->should_stop = false;
+
+};
+
 GameLogic::GameLogic(int chooise): should_stop(false) {
 	this->board = new Board(InputTest::get_size_from_user());
 
@@ -123,6 +129,13 @@ int GameLogic::play_one_turn(Player* p1) {
 		 change_all_points(this->board,this->players[1],best_point,start_points,end_points,flip_number);
 		 cout << players[1]->getName() << " Played Point: " << best_point <<endl;
 	 }
+
+
+	 // print score and board
+	 cout << "X points: " << player1_points()<<endl;;
+	 cout << "O points: " << player2_points()<<endl;
+
+	 this->print_board();
 
 
 	 // return 0 - means AI played.
@@ -495,6 +508,7 @@ int GameLogic::player2_points() {
 }
 
 void GameLogic::print_board(Board* b) {
+	cout<<"current board"<<endl;
 	b->print_matrix();
 }
 
@@ -590,8 +604,18 @@ void GameLogic::set_on_board(int row, int col, Player* player) {
 
 }
 void GameLogic::init_start_board(){
+	this->board->set_matrix(3,2,'O');
+	this->board->set_matrix(3,1,'O');
+	this->board->set_matrix(2,2,'O');
+	this->board->set_matrix(1,3,'O');
+
+
+
+
+	/*
 	this->board->set_matrix(this->board->get_size()/2 - 1,this->board->get_size()/2 - 1,'O');
 		this->board->set_matrix(this->board->get_size()/2,this->board->get_size()/2,'O');
 		this->board->set_matrix(this->board->get_size()/2,this->board->get_size()/2 - 1,'X');
 		this->board->set_matrix(this->board->get_size()/2 - 1,this->board->get_size()/2,'X');
+		*/
 }

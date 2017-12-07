@@ -30,6 +30,8 @@ public:
 	 * @return string - "PLAYER" for Human type, and "AI" for AIPlayer
 	 */
 	virtual string get_type() const;
+	void set_name(const string& name);
+	void set_symbol(char symbol);
 
 private:
 	char symbol;

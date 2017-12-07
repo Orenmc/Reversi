@@ -17,6 +17,8 @@ public:
 	virtual string get_type() const;
 	void connectToServer();
 	void sendNumber();
+	void readFromServer(int buf[]);
+	void writeToServer(int buf[]);
 
 private:
 	const char *serverIP;

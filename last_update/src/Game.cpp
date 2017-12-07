@@ -41,8 +41,10 @@ void Game::run() {
 		}
 		//first player try to play
 		if (this->gl->play_one_turn(gl->get_player(1)) == 0) {
+			/*
 			print_score(gl);
 			this->gl->print_board();
+			*/
 			counter = 0; // if played initialize counter strikes
 		} else { // if didn't play - counter =1
 			if (counter == 1) {
@@ -66,8 +68,10 @@ void Game::run() {
 		// now second player
 		if(this->gl->get_player(2)->get_type() != "DUMMY") {
 			if (this->gl->play_one_turn(gl->get_player(2)) == 0) {
+				/*
 				print_score(gl);
 				this->gl->print_board();
+				*/
 				counter = 0;
 			} else { // if didnt play - end game if counter =1, or next player plays
 				if (counter == 1) {
@@ -91,10 +95,15 @@ void Game::run() {
 }
 
 void Game::print_score(GameLogic* gameLogic) const {
+	/*
 // first player points
 	cout<< gameLogic->get_player(1)->getName() << " points: " <<gameLogic->player1_points()<< endl;
 // second player points
 	cout<< gameLogic->get_player(2)->getName() << " points: " << gameLogic->player2_points() << endl;
+
+*/
+	cout << "X points: " << gameLogic->player1_points()<<endl;;
+	cout << "O points: " << gameLogic->player2_points()<<endl;
 }
 
 void Game::end_of_game(GameLogic* gl) const {

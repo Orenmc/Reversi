@@ -21,6 +21,7 @@
 
 class GameLogic {
 public:
+	GameLogic();
 	GameLogic(int chooise);
 	virtual ~GameLogic();
 

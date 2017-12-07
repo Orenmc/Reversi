@@ -7,7 +7,7 @@
 
 #include "../include/DummyPlayer.h"
 
-DummyPlayer::DummyPlayer():Player("Dummy",'D'){
+DummyPlayer::DummyPlayer():Player("player_1",'X'){
 
 }
 

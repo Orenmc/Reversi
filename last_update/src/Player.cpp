@@ -43,3 +43,11 @@ Player::~Player() {
 string Player::get_type() const {
 	return NULL;
 }
+
+void Player::set_name(const string& name) {
+	this->name = name;
+}
+
+void Player::set_symbol(char symbol) {
+	this->symbol = symbol;
+}
