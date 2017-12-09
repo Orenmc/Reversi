@@ -8,7 +8,7 @@
 #include "../include/RemoteGameLogic.h"
 
 RemoteGameLogic::RemoteGameLogic() {
-	this->players[0] = new RemotePlayer("127.0.0.1", 8000);
+	this->players[0] = new RemotePlayer("127.0.0.1", 8001);
 	this->players[1] = new DummyPlayer();
 	this->board = new Board(4);
 	this->waiting_to_player = true;
@@ -50,15 +50,19 @@ int RemoteGameLogic::play_one_turn(Player* p1) {
 		rp->writeToServer(buffer);
 		return 1;
 
-	}else{
+	}else if (buffer[0] == 0 && buffer[1] == 0){
+		cout << "The second player disconnected"<< endl;
+		return 1;
+
+	} else {
 		find_options(this->board,players[1],start_points,end_points,flip_number);
 		Point point = Point(buffer[0]-1,buffer[1]-1);
 		change_all_points(this->board,players[1],point,start_points,end_points,flip_number);
 		//cout << "RemoteGameLogic - when getting from server"<<endl;
 		this->print_board();
 		cout<<endl << players[1]->getSymbol() << " played: " << point<<endl<<endl;
-
 	}
+
 	start_points.clear();
 	end_points.clear();
 	flip_number.clear();

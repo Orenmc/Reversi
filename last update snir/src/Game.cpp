@@ -30,7 +30,7 @@ void Game::init_game_logic() {
 
 void Game::run() {
 	//before play - print board
-	//this->gl->print_board();
+	this->gl->print_board();
 	int counter = 0; // count numbers if "don't play rows" - if =2 stop game
 
 	while(this->gl->is_should_stop() == false) { //as long some player can play
@@ -94,7 +94,7 @@ void Game::run() {
 	}
 	//end of while
 	end_of_game(gl);
-	//startOrExit();
+	startOrExit();
 }
 
 void Game::print_score(GameLogic* gameLogic) const {
@@ -120,13 +120,13 @@ void Game::end_of_game(GameLogic* gl) const {
 	if(points1 == points2){
 		cout << "Equal - no one wins"<<endl;
 	}else if(points1>points2){
-			cout <<"###### " << gl->get_player(1)->getName()<< " WINS ######" <<endl;
+			cout <<"###### " << gl->get_player(1)->getSymbol()<< " WINS ######" <<endl;
 		} else {
-			cout <<"###### " << gl->get_player(2)->getName()<< " WINS ######" <<endl;
+			cout <<"###### " << gl->get_player(2)->getSymbol()<< " WINS ######" <<endl;
 		}
 	print_score(gl);
 }
-/*
+
 void Game::startOrExit() {
 	cout<<endl;
 	char symbol;
@@ -137,8 +137,8 @@ void Game::startOrExit() {
 		cout<<"Thank you for playing Reversi!"<<endl;;
 	}
 	if(symbol == 'n') {
+	delete gl;
 		init_game_logic();
 		run();
 	}
 }
-*/

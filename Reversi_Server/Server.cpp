@@ -100,6 +100,7 @@ void Server::handleClients(int clientSocket1, int clientSocket2) {
 		} else if (buf[0]== -1) {
 			if(counter == 1){
 				n = write(clientSocket1, &endGame, sizeof(endGame));
+
 			} else {
 				counter = 1;
 				n = write(clientSocket1, &buf, sizeof(buf));
@@ -130,6 +131,7 @@ void Server::handleClients(int clientSocket1, int clientSocket2) {
 		if(buf[0]== -1){
 			if(counter == 1){
 				n = write(clientSocket2, &endGame, sizeof(endGame));
+
 			} else {
 				counter = 1;
 				n = write(clientSocket2, &buf, sizeof(buf));

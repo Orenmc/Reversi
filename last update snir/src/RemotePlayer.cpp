@@ -73,15 +73,6 @@ void RemotePlayer::connectToServer() {
 	int buffer[2];
 	int n = read(clientSocket, &buffer, sizeof(buffer));
 
-	if (n == -1) {
-		cout << "Error reading move from server" << endl;
-		return;
-	}
-	if (n == 0) {
-		cout << "Client1 disconnected" << endl;
-		return;
-	}
-
 	cout<<"----------------"<<endl;
 	if(buffer[0] == 1){
 		cout<<"You are the first player to connect - player 'X'"<<endl;
@@ -105,7 +96,6 @@ void RemotePlayer::readFromServer(int buf[]) {
 		cout << "Client1 disconnected" << endl;
 		return;
 	}
-
 	buf[0]=test[0];
 	buf[1]=test[1];
 }
@@ -119,10 +109,6 @@ void RemotePlayer::writeToServer(int buf[]) {
 	n = write(clientSocket, &buffer,sizeof(buffer));
 	if (n == -1) {
 		cout << "Error writing to the server" << endl;
-		return;
-	}
-	if (n == 0) {
-		cout << "Client1 disconnected" << endl;
 		return;
 	}
 
