@@ -1,0 +1,148 @@
+commit 15d6ce4f44940736f8236d59181df119ab6749ee
+Author: Orenmc <oren.c90@gmail.com>
+Date:   Thu Nov 30 00:24:38 2017 +0200
+
+    last change for ex3 - with tests and all src files
+
+commit 7ad3d026340cf271e69955d106d5b1c979859f88
+Author: SnirHazan <snirhazan30@gmail.com>
+Date:   Wed Nov 29 23:48:54 2017 +0200
+
+    test to board
+
+commit 722c2edc7f155531f7d1c6b6de06580c81cf0b91
+Author: SnirHazan <snirhazan30@gmail.com>
+Date:   Wed Nov 29 23:45:01 2017 +0200
+
+    add test to board
+
+commit 77a2097b8f92ca9c498759bc4d5b26e2df2dda61
+Author: SnirHazan <snirhazan30@gmail.com>
+Date:   Wed Nov 29 22:53:53 2017 +0200
+
+    New MakeFile
+:...skipping...
+commit 15d6ce4f44940736f8236d59181df119ab6749ee
+Author: Orenmc <oren.c90@gmail.com>
+Date:   Thu Nov 30 00:24:38 2017 +0200
+
+    last change for ex3 - with tests and all src files
+
+commit 7ad3d026340cf271e69955d106d5b1c979859f88
+Author: SnirHazan <snirhazan30@gmail.com>
+Date:   Wed Nov 29 23:48:54 2017 +0200
+
+    test to board
+
+commit 722c2edc7f155531f7d1c6b6de06580c81cf0b91
+Author: SnirHazan <snirhazan30@gmail.com>
+Date:   Wed Nov 29 23:45:01 2017 +0200
+
+    add test to board
+
+commit 77a2097b8f92ca9c498759bc4d5b26e2df2dda61
+Author: SnirHazan <snirhazan30@gmail.com>
+Date:   Wed Nov 29 22:53:53 2017 +0200
+
+    New MakeFile
+
+:...skipping...
+commit 15d6ce4f44940736f8236d59181df119ab6749ee
+Author: Orenmc <oren.c90@gmail.com>
+Date:   Thu Nov 30 00:24:38 2017 +0200
+
+    last change for ex3 - with tests and all src files
+
+commit 7ad3d026340cf271e69955d106d5b1c979859f88
+Author: SnirHazan <snirhazan30@gmail.com>
+Date:   Wed Nov 29 23:48:54 2017 +0200
+
+    test to board
+
+commit 722c2edc7f155531f7d1c6b6de06580c81cf0b91
+Author: SnirHazan <snirhazan30@gmail.com>
+Date:   Wed Nov 29 23:45:01 2017 +0200
+
+    add test to board
+
+commit 77a2097b8f92ca9c498759bc4d5b26e2df2dda61
+Author: SnirHazan <snirhazan30@gmail.com>
+Date:   Wed Nov 29 22:53:53 2017 +0200
+
+    New MakeFile
+
+commit c9cc19ac03fb20004b6ddedc46fbd543e69d7b62
+Author: SnirHazan <snirhazan30@gmail.com>
+Date:   Wed Nov 29 22:42:14 2017 +0200
+
+    MakeFile and READme.txt
+
+commit a3eea9463a560eb2b4f017e36746cdcb4c597728
+Author: SnirHazan <snirhazan30@gmail.com>
+Date:   Wed Nov 29 22:38:12 2017 +0200
+
+    Upload some tests
+
+commit 5d0be0236774e9177ff6fb461b2d852450429015
+Merge: 82dc720 5d8f3ee
+Author: Orenmc <oren.c90@gmail.com>
+Date:   Wed Nov 29 22:50:56 2017 +0200
+
+    Merge branch 'master' of https://github.com/Orenmc/Reversi
+
+commit 82dc720f310850595469d33fca7e870231cd3034
+Author: Orenmc <oren.c90@gmail.com>
+Date:   Wed Nov 29 22:50:22 2017 +0200
+
+    add complete project to new file - last_update
+
+commit 5d8f3ee538d2f9e9274011877fb0585cf645ac9b
+Author: SnirHazan <snirhazan30@gmail.com>
+Date:   Wed Nov 29 15:01:24 2017 +0200
+
+    snir hazan
+
+commit f88d787f20c32764409bef4b576ad3917b02c2d1
+Author: Orenmc <oren.c90@gmail.com>
+Date:   Tue Nov 28 23:56:44 2017 +0200
+
+    change Gamelogic for AI to play minmax algorithm
+
+commit 09e65127a1fcae77e7d3ac852034248871433755
+Merge: 49ea0d1 73219c6
+Author: Orenmc <oren.c90@gmail.com>
+Date:   Tue Nov 28 17:08:31 2017 +0200
+
+    17:08 change
+
+commit 49ea0d16e9973a1d84dacb0b0e351804ade09989
+Author: Orenmc <oren.c90@gmail.com>
+Date:   Tue Nov 28 17:05:33 2017 +0200
+
+    oren change
+
+commit 73219c6d45bba341ab9e2e25610ae70a075edbfc
+Author: SnirHazan <snirhazan30@gmail.com>
+Date:   Tue Nov 28 17:02:18 2017 +0200
+
+    change the main
+
+commit c7de326358611f2985e2d79b7fa13381e0222319
+Author: Orenmc <33998075+Orenmc@users.noreply.github.com>
+Date:   Tue Nov 28 14:09:17 2017 +0200
+
+    Delete .project
+
+commit dbb73d313924c572d2049d3676fcf9a00b69a72e
+Author: SnirHazan <snirhazan30@gmail.com>
+Date:   Tue Nov 28 14:01:25 2017 +0200
+
+    Snirhazan change
+
+commit 9a131934f1274e9c228a9d78a59970e7bedfe1c4
+Author: Orenmc <oren.c90@gmail.com>
+Date:   Tue Nov 28 13:58:33 2017 +0200
+
+    add all files
+(END)
+
