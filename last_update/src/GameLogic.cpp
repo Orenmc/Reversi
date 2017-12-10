@@ -605,7 +605,7 @@ void GameLogic::set_on_board(int row, int col, Player* player) {
 void GameLogic::init_start_board(){
 
 	this->board->set_matrix(this->board->get_size()/2 - 1,this->board->get_size()/2 - 1,'O');
-		this->board->set_matrix(this->board->get_size()/2,this->board->get_size()/2,'X');
+		this->board->set_matrix(this->board->get_size()/2,this->board->get_size()/2,'O');
 		this->board->set_matrix(this->board->get_size()/2,this->board->get_size()/2 - 1,'X');
 		this->board->set_matrix(this->board->get_size()/2 - 1,this->board->get_size()/2,'X');
 }

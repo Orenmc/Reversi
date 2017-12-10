@@ -71,7 +71,7 @@ void RemotePlayer::connectToServer() {
 	}
 	cout << "Connected to server" << endl;
 
-
+/*
 	int buffer[2];
 	int n = read(clientSocket, &buffer, sizeof(buffer));
 
@@ -86,7 +86,7 @@ void RemotePlayer::connectToServer() {
 	}
 	cout<<"----------------"<<endl;
 
-
+*/
 }
 
 void RemotePlayer::readFromServer(int buf[]) {

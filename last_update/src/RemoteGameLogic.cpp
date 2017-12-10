@@ -21,59 +21,33 @@ RemoteGameLogic::~RemoteGameLogic() {
 }
 int RemoteGameLogic::play_one_turn(Player* p1) {
 	bool end_game_flag =false;
-/*
-	if(p1->get_type()== "DUMMY"){
-	//	cout << "Dummy not played - RemoteGameLogic line24" << endl;
-		return 1;
-	}
-	*/
 	int buffer[2] = {0,0};
 
 	vector<Point> start_points, end_points;
 	vector<int> flip_number;
 	RemotePlayer* rp = dynamic_cast<RemotePlayer*>(players[0]);
 	try {
-		//rp->sendNumber();
 		rp->readFromServer(buffer);
-
 
 	} catch (const char *msg) {
 		cout << "Failed to send exercise to server. Reason: " << msg << endl;
 	}
 	//if =-2 means first player connected swap players
 	if(buffer[0] == -2){
-		//cout << "read -2 from server - swap" <<endl;
 		cout << endl;
+		// set player X, O in the right order
 		this->change_players();
 	} else if(buffer[0] == -1) {
 		end_game_flag = true;
-		// this->print_board();
 		cout<<endl << players[1]->getSymbol() << " not played - no available move"<<endl<<endl;
 	} else if(buffer[0] == -3){
-		/*
-		cout << "player " << p1->getSymbol() << "  ";
-		cout << "got EOG from server = RGL 52" << endl;
-		*/
-		//buffer[0] = -1;
-		//buffer[1] = -1;
-		//cout << "ENDGAME - RemoteGameLogic line - 51" << endl;
-		//rp->writeToServer(buffer);
+		//end game - no play
 		return 1;
-
-	}else if (buffer[0] == 0 && buffer[1] == 0){
-		/*
-		cout << "The second player disconnected"<< endl;
-		return 1;
-		*/
-		/*
-		 * NEED TO DO THIS FINAL ELSE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		 */
 
 	} else {
 		find_options(this->board,players[1],start_points,end_points,flip_number);
 		Point point = Point(buffer[0]-1,buffer[1]-1);
 		change_all_points(this->board,players[1],point,start_points,end_points,flip_number);
-		//cout << "RemoteGameLogic - when getting from server"<<endl;
 		this->print_board();
 		cout<<endl << players[1]->getSymbol() << " played: " << point<<endl<<endl;
 	}
@@ -82,24 +56,20 @@ int RemoteGameLogic::play_one_turn(Player* p1) {
 	end_points.clear();
 	flip_number.clear();
 
-	//	cout << p1->getName() << " - '" << p1->getSymbol() << "' turn" <<endl;
 	this->find_options(this->board,p1,start_points,end_points,flip_number);
 	//order all points to print
 	if (start_points.empty() == true) {
-		//return 1;
 		buffer[0]=-1;
 		buffer[1]=-1;
 		if(end_game_flag == true) {
-			cout << "stuck here" << endl;
 			rp->writeToServer(buffer);
 			 return 1;
 		}
-		cout << "no available moves other player move - RGL 91" << endl;
+		cout << "no available moves other player move" << endl;
 		cout<< "waiting for opponent plays..." <<endl<<endl;
-		/*
-	//	InputTest::press_any_key();
 
-	 */
+		InputTest::press_any_key();
+
 	} else {
 		//order all points in set (without duplicates)
 		set<Point> s;
@@ -128,7 +98,6 @@ int RemoteGameLogic::play_one_turn(Player* p1) {
 				change_all_points(this->board,p1,Point(row-1,col-1),start_points,end_points,flip_number);
 				cout << endl << p1->getSymbol() << " Played Point: " << Point(row-1,col-1) <<endl<<endl;
 				this->print_board();
-				//	cout << "RemoteGameLogic - befor writeToServer" << endl;
 				break;
 			}
 			cout << "not good option - try again."<< endl;

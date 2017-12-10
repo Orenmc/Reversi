@@ -57,10 +57,10 @@ void Server::start() {
 
 		cout << "Client 1 connected" << endl;
 
-
+/*
 		int player1[2] = {1,0};
 		int n = write(clientSocket1, &player1, sizeof(player1));
-
+*/
 		// Accept a new client connection
 		int clientSocket2 = accept(serverSocket, (struct
 				sockaddr *)&clientAddress, &clientAddressLen);
@@ -69,11 +69,11 @@ void Server::start() {
 			throw "Error on accept";
 
 		cout << "Client 2 connected" << endl;
-
+/*
 
 		int player2[2] = {2,0};
 		n = write(clientSocket2, &player2, sizeof(player2));
-
+*/
 
 		handleClients(clientSocket1,clientSocket2);
 
