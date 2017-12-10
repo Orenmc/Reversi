@@ -48,27 +48,44 @@ void Server::start() {
 
 	cout << "Waiting for client connections..." << endl;
 	// Accept a new client connection
-	int clientSocket1 = accept(serverSocket, (struct
-			sockaddr *)&clientAddress, &clientAddressLen);
-	cout << "Client 1 connected" << endl;
+	do{
+		int clientSocket1 = accept(serverSocket, (struct
+				sockaddr *)&clientAddress, &clientAddressLen);
 
-	if (clientSocket1 == -1)
-		throw "Error on accept";
+		if (clientSocket1 == -1)
+			throw "Error on accept";
 
-	// Accept a new client connection
-	int clientSocket2 = accept(serverSocket, (struct
-			sockaddr *)&clientAddress, &clientAddressLen);
+		cout << "Client 1 connected" << endl;
 
 
-	cout << "Client 2 connected" << endl;
-	if (clientSocket2 == -1)
-		throw "Error on accept";
+		int player1[2] = {1,0};
+		int n = write(clientSocket1, &player1, sizeof(player1));
 
-	handleClients(clientSocket1,clientSocket2);
+		// Accept a new client connection
+		int clientSocket2 = accept(serverSocket, (struct
+				sockaddr *)&clientAddress, &clientAddressLen);
 
-	// Close communication with the client
-	close(clientSocket1);
-	close(clientSocket2);
+		if (clientSocket2 == -1)
+			throw "Error on accept";
+
+		cout << "Client 2 connected" << endl;
+
+
+		int player2[2] = {2,0};
+		n = write(clientSocket2, &player2, sizeof(player2));
+
+
+		handleClients(clientSocket1,clientSocket2);
+
+		/*
+		// Close communication with the client
+		close(clientSocket1);
+		close(clientSocket2);
+		*/
+	}
+	while(true);
+
+
 }
 
 // Handle requests from a specific client
@@ -76,21 +93,24 @@ void Server::handleClients(int clientSocket1, int clientSocket2) {
 	int buf[2];
 	bool flag = true;
 	int n;
-	int empty[2] = {-2,-2};
+	int first_connection[2] = {-2,-2};
 	int endGame[2]= {-3,-3};
-	int counter=0;
-
-
+	int counter = 0;
+	char test;
 	while (true) {
 		// Read move from client and send to another client.
 
 		if (flag == true){
-			n = write(clientSocket1, &empty, sizeof(empty));
+			n = write(clientSocket1, &first_connection, sizeof(first_connection));
 			flag = false;
 		} else if (buf[0]== -1) {
+
 			if(counter == 1){
 				n = write(clientSocket1, &endGame, sizeof(endGame));
+				n = write(clientSocket2, &endGame, sizeof(endGame));
+				break;
 			} else {
+				cout << "player 1 check if he can play" << endl;
 				counter = 1;
 				n = write(clientSocket1, &buf, sizeof(buf));
 			}
@@ -106,7 +126,7 @@ void Server::handleClients(int clientSocket1, int clientSocket2) {
 			cout << "Client1 disconnected" << endl;
 			return;
 		}
-
+		//read from player 1
 		n = read(clientSocket1, &buf, sizeof(buf));
 		if (n == -1) {
 			cout << "Error reading move from client1" << endl;
@@ -118,8 +138,11 @@ void Server::handleClients(int clientSocket1, int clientSocket2) {
 		}
 
 		if(buf[0]== -1){
+
 			if(counter == 1){
 				n = write(clientSocket2, &endGame, sizeof(endGame));
+				n = write(clientSocket1, &endGame, sizeof(endGame));
+				break;
 			} else {
 				counter = 1;
 				n = write(clientSocket2, &buf, sizeof(buf));
@@ -129,11 +152,7 @@ void Server::handleClients(int clientSocket1, int clientSocket2) {
 			n = write(clientSocket2, &buf, sizeof(buf));
 		}
 
-
-		//cout << "this is the sending of client1 " << buf[0] << "--" << buf[1]<< endl;
-
 		// Write the result back to the client
-		//n = write(clientSocket2, &buf, sizeof(buf));
 		if (n == -1) {
 			cout << "Error writing move to client2" << endl;
 			return;
@@ -145,12 +164,8 @@ void Server::handleClients(int clientSocket1, int clientSocket2) {
 
 
 
-
-
-
-
-
 		n = read(clientSocket2, &buf, sizeof(buf));
+
 		if (n == -1) {
 			cout << "Error read move from client2" << endl;
 			return;
@@ -160,10 +175,11 @@ void Server::handleClients(int clientSocket1, int clientSocket2) {
 			return;
 		}
 
-
-
-		//cout << "this is the sending of client2 " << buf[0] << "--" << buf[1]<< endl;
 	}
+	 // "SERVER - only here close" << endl;
+	// Close communication with the client
+			close(clientSocket1);
+			close(clientSocket2);
 }
 
 void Server::stop() {

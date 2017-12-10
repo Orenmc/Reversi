@@ -37,6 +37,8 @@ public:
 	 */
 	void end_of_game(GameLogic *gl) const;
 
+	void startOrExit();
+
 private:
 	GameLogic *gl;
 

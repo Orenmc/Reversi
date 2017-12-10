@@ -38,6 +38,11 @@ public:
 	 */
 	bool is_should_stop() const;
 	/**
+	 * get Board
+	 */
+	Board* getBoard();
+
+	/**
 	 * Standard set.
 	 */
 	void set_should_stop(bool shouldStop);

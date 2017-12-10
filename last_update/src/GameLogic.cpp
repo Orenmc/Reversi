@@ -10,9 +10,7 @@
 #include "../include/GameLogic.h"
 #include <iostream>
 
-GameLogic::GameLogic(){
-	this->board = new Board(0);
-	this->should_stop = false;
+GameLogic::GameLogic() : should_stop(false), board(0){
 
 };
 
@@ -60,11 +58,12 @@ bool GameLogic::is_should_stop() const {
 void GameLogic::set_should_stop(bool shouldStop) {
 	should_stop = shouldStop;
 }
-
+//-------------------------------------------------------
 void GameLogic::print_board() {
 	this->print_board(this->board);
+	cout << endl;
 }
-
+//-------------------------------------------------------
 
 Player* GameLogic::get_player(int i) const {
 	return players[i-1];
@@ -82,6 +81,7 @@ int GameLogic::play_one_turn(Player* p1) {
 	this->find_options(this->board,p1,start_points,end_points,flip_number);
 	//order all points to print
 	if (start_points.empty() == true) {
+		cout << "no available moves  GAMELOGIC line 84" << endl;
 		return 1;
 	}
 	//order all points in set (without duplicates)
@@ -94,6 +94,7 @@ int GameLogic::play_one_turn(Player* p1) {
 	 //print options -- only for human player.
 	 if (p1->get_type() == "PLAYER") {
 		 while(true){
+			 this->print_board(this->board);
 		 		cout << p1->getName() << " options are:";
 		 		for (std::set<Point>::iterator it=s.begin(); it!=s.end(); ++it) {
 		 			cout << " " << *it;
@@ -136,7 +137,6 @@ int GameLogic::play_one_turn(Player* p1) {
 	 cout << "O points: " << player2_points()<<endl;
 
 	 this->print_board();
-
 
 	 // return 0 - means AI played.
 	return 0;
@@ -508,7 +508,7 @@ int GameLogic::player2_points() {
 }
 
 void GameLogic::print_board(Board* b) {
-	cout<<"current board"<<endl;
+	cout<<"current board:"<<endl;
 	b->print_matrix();
 }
 
@@ -555,24 +555,24 @@ int GameLogic::check_point_for_AI(Point p, vector<Point> start_points, vector<Po
 	int board_size = this->board->get_size();
 
 	//create a new "copy" board
-	Board* b_copy = new Board(board_size);
+	Board b_copy(board_size);
 	//copy all symbols
 	for(int i = 0; i < board_size ; i++) {
 		for(int j = 0; j < board_size; j++){
-			b_copy->set_matrix(i,j,this->board->get_cell(i,j));
+			b_copy.set_matrix(i,j,this->board->get_cell(i,j));
 		}
 	}
 	//sets point p to copy matrix
-	this->change_all_points(b_copy,this->get_player(2),p,start_points,end_points,flip_ctr);
+	this->change_all_points(&b_copy,this->get_player(2),p,start_points,end_points,flip_ctr);
 
 
 	//find option for 1st player
-	this->find_options(b_copy,this->get_player(1),copy_start_points,copy_end_points,copy_flip_number);
+	this->find_options(&b_copy,this->get_player(1),copy_start_points,copy_end_points,copy_flip_number);
 
 
 	//if no points - return this diff between 'X' to 'O'
 	if (copy_start_points.empty() == true) {
-		return (b_copy->x_points() - b_copy->o_points());
+		return (b_copy.x_points() - b_copy.o_points());
 	}
 	//enter all optional points to set - reduce duplicates
 	set<Point> s;
@@ -592,9 +592,8 @@ int GameLogic::check_point_for_AI(Point p, vector<Point> start_points, vector<Po
 		 }
 	 }
 
-	 int test = b_copy->x_points() + 1 - b_copy->o_points() + 2*max;
+	 int test = b_copy.x_points() + 1 - b_copy.o_points() + 2*max;
 
-	 delete b_copy;
 	 return test;
 
 }
@@ -604,18 +603,13 @@ void GameLogic::set_on_board(int row, int col, Player* player) {
 
 }
 void GameLogic::init_start_board(){
-	this->board->set_matrix(3,2,'O');
-	this->board->set_matrix(3,1,'O');
-	this->board->set_matrix(2,2,'O');
-	this->board->set_matrix(1,3,'O');
 
-
-
-
-	/*
 	this->board->set_matrix(this->board->get_size()/2 - 1,this->board->get_size()/2 - 1,'O');
-		this->board->set_matrix(this->board->get_size()/2,this->board->get_size()/2,'O');
+		this->board->set_matrix(this->board->get_size()/2,this->board->get_size()/2,'X');
 		this->board->set_matrix(this->board->get_size()/2,this->board->get_size()/2 - 1,'X');
 		this->board->set_matrix(this->board->get_size()/2 - 1,this->board->get_size()/2,'X');
-		*/
+}
+
+Board* GameLogic::getBoard() {
+	return this->board;
 }

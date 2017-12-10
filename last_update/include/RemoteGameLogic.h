@@ -15,6 +15,9 @@ public:
 	RemoteGameLogic();
 	virtual ~RemoteGameLogic();
 	int play_one_turn(Player* p1);
+private:
+	void change_players();
+	bool waiting_to_player;
 };
 
 #endif /* REMOTEGAMELOGIC_H_ */

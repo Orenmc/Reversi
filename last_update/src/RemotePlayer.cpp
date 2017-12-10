@@ -14,14 +14,12 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
-
-#define SIZE 2
 using namespace std;
 
 
 
 RemotePlayer::RemotePlayer(const char *serverIP, int serverPort):Player("player_2",'O'),
-	serverIP(serverIP), serverPort(serverPort), clientSocket(0) {
+		serverIP(serverIP), serverPort(serverPort), clientSocket(0) {
 	/*
 	 * SHOULD READ FROM FILE - OPEN FILE->READ PORT->AND IP
 	 */
@@ -29,7 +27,7 @@ RemotePlayer::RemotePlayer(const char *serverIP, int serverPort):Player("player_
 		connectToServer();
 	} catch (const char *msg) {
 		cout << "Failed to connect to server. Reason:" << msg << endl;
-				exit(-1);
+		exit(-1);
 	}
 }
 
@@ -72,24 +70,22 @@ void RemotePlayer::connectToServer() {
 		throw "Error connecting to server";
 	}
 	cout << "Connected to server" << endl;
-}
-void RemotePlayer::sendNumber() {
+
+
 	int buffer[2];
-
-	// Write the exercise arguments to the socket
-
 	int n = read(clientSocket, &buffer, sizeof(buffer));
-	if (buffer[1] == -1) {
-	cout << "this is first time"<<endl << "sets first player name and symbol"<<endl;
-	this->set_name("player_1");
-	this->set_symbol('X');
-	} else {
-		cout << "this is the point: " << buffer[0] <<" ," << buffer[1] << endl;
 
+	cout<<"----------------"<<endl;
+	cout << " " << buffer[0] <<"," << buffer[1] << endl;
+	if(buffer[0] == 1){
+		cout<<"You are the first player to connect - player 'X'"<<endl;
+		cout <<"Waiting for other player to join..."<< endl;
+	} else if(buffer[0] == 2){
+		cout<<"You are the second player to connect - player 'O'"<<endl;
+		cout<< "waiting for opponent plays..." <<endl;
 	}
-	cout << "Enter two numbers" << endl;
-	cin >> buffer[0] >> buffer[1];
-	n = write(clientSocket, &buffer,sizeof(buffer));
+	cout<<"----------------"<<endl;
+
 
 }
 
@@ -97,16 +93,14 @@ void RemotePlayer::readFromServer(int buf[]) {
 	int test[2];
 
 	int n = read(clientSocket, &test, sizeof(test));
-	/*
-	if (test[1] == -2) {
-		cout << " -2 - do nothing" << endl;
-	} else {
-
-		//cout << "readFromServer" <<endl;
-		//cout << "player " << this->getSymbol() << " played" << test[0] <<" ," << test[1] << endl;
-
+	if (n == -1) {
+		cout << "Error reading move from server" << endl;
+		return;
 	}
-*/
+	if (n == 0) {
+		cout << "Client1 disconnected" << endl;
+		return;
+	}
 	buf[0]=test[0];
 	buf[1]=test[1];
 }
@@ -116,6 +110,10 @@ void RemotePlayer::writeToServer(int buf[]) {
 	int n;
 	buffer[0]=buf[0];
 	buffer[1]=buf[1];
-	cout<< "waiting for opponent plays..." <<endl;
 	n = write(clientSocket, &buffer,sizeof(buffer));
+	if (n == -1) {
+		cout << "Error writing to the server" << endl;
+		return;
+	}
+
 }
