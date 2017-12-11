@@ -9,6 +9,7 @@
 #define REMOTEPLAYER_H_
 
 #include "Player.h"
+#include <fstream>
 
 class RemotePlayer: public Player {
 public:

@@ -27,8 +27,18 @@ using namespace std;
 #define MAX_CONNECTED_CLIENTS 2
 Server::Server():port(0), serverSocket(0) {
 	ifstream myFILE;
-		myFILE.open("ServerConfig.txt");
-		myFILE>>port;
+	int test;
+		myFILE.open("./ServerConfig.txt");
+
+		if(myFILE.is_open()){
+			myFILE>>port;
+		} else {
+			cout << "not opened" << endl;
+		}
+		/*
+		myFILE>>test;
+		cout << test << endl;
+		*/
 	cout << "Server" << endl;
 }
 void Server::start() {

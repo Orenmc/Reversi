@@ -50,7 +50,8 @@ void Game::run() {
 			counter = 0; // if played initialize counter strikes
 		} else { // if didn't play - counter =1
 			if (counter == 1) {
-				cout << "No available moves for both of the player- Game Over!" << endl;
+				//cout << "No available moves for both of the player- Game Over!" << endl;
+
 				//end of Game
 				this->gl->set_should_stop(true);
 				break;

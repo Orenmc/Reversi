@@ -19,10 +19,7 @@ using namespace std;
 
 
 RemotePlayer::RemotePlayer(const char *serverIP, int serverPort):Player("player_2",'O'),
-		serverIP(serverIP), serverPort(serverPort), clientSocket(0) {
-	/*
-	 * SHOULD READ FROM FILE - OPEN FILE->READ PORT->AND IP
-	 */
+		serverIP("127.0.0.1"), serverPort(8000), clientSocket(0) {
 	try {
 		connectToServer();
 	} catch (const char *msg) {
@@ -71,12 +68,10 @@ void RemotePlayer::connectToServer() {
 	}
 	cout << "Connected to server" << endl;
 
-/*
+
 	int buffer[2];
 	int n = read(clientSocket, &buffer, sizeof(buffer));
-
 	cout<<"----------------"<<endl;
-	cout << " " << buffer[0] <<"," << buffer[1] << endl;
 	if(buffer[0] == 1){
 		cout<<"You are the first player to connect - player 'X'"<<endl;
 		cout <<"Waiting for other player to join..."<< endl;
@@ -86,7 +81,6 @@ void RemotePlayer::connectToServer() {
 	}
 	cout<<"----------------"<<endl;
 
-*/
 }
 
 void RemotePlayer::readFromServer(int buf[]) {

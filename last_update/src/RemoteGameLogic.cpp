@@ -8,7 +8,20 @@
 #include "../include/RemoteGameLogic.h"
 
 RemoteGameLogic::RemoteGameLogic() {
-	this->players[0] = new RemotePlayer("127.0.0.1", 8001);
+	ifstream myFILE;
+	int port;
+	string ip;
+
+	myFILE.open("./ClientConfig.txt");
+	if(myFILE.is_open()) {
+		cout << "opened" << endl;
+		myFILE>>port;
+		myFILE>>ip;
+	} else {
+		cout << "not opened" << endl;
+	}
+
+	this->players[0] = new RemotePlayer(ip.c_str(),port);
 	this->players[1] = new DummyPlayer();
 	this->board = new Board(4);
 	this->waiting_to_player = true;
@@ -32,19 +45,27 @@ int RemoteGameLogic::play_one_turn(Player* p1) {
 	} catch (const char *msg) {
 		cout << "Failed to send exercise to server. Reason: " << msg << endl;
 	}
+
+
 	//if =-2 means first player connected swap players
-	if(buffer[0] == -2){
+	if(buffer[0] == INIT){
 		cout << endl;
 		// set player X, O in the right order
 		this->change_players();
-	} else if(buffer[0] == -1) {
+	} else if(buffer[0] == NO_MOVE) {
 		end_game_flag = true;
 		cout<<endl << players[1]->getSymbol() << " not played - no available move"<<endl<<endl;
-	} else if(buffer[0] == -3){
+	} else if(buffer[0] == END_OF_GAME){
 		//end game - no play
+		cout << "No available moves for both of the player- Game Over!" << endl;
 		return 1;
 
-	} else {
+	} else if(buffer[0] == DISCONNECTED) {
+
+		cout << "other play Disconnected" << endl<<endl;
+		return 1;
+
+	}else {
 		find_options(this->board,players[1],start_points,end_points,flip_number);
 		Point point = Point(buffer[0]-1,buffer[1]-1);
 		change_all_points(this->board,players[1],point,start_points,end_points,flip_number);
@@ -63,7 +84,7 @@ int RemoteGameLogic::play_one_turn(Player* p1) {
 		buffer[1]=-1;
 		if(end_game_flag == true) {
 			rp->writeToServer(buffer);
-			 return 1;
+			return 1;
 		}
 		cout << "no available moves other player move" << endl;
 		cout<< "waiting for opponent plays..." <<endl<<endl;
@@ -103,7 +124,7 @@ int RemoteGameLogic::play_one_turn(Player* p1) {
 			cout << "not good option - try again."<< endl;
 		}
 	}
-	//cout<< "waiting for opponent plays..." <<endl;
+	cout<< "waiting for opponent plays..." <<endl;
 	rp->writeToServer(buffer);
 	return 0;
 }
