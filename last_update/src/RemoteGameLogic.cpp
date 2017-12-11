@@ -23,7 +23,7 @@ RemoteGameLogic::RemoteGameLogic() {
 
 	this->players[0] = new RemotePlayer(ip.c_str(),port);
 	this->players[1] = new DummyPlayer();
-	this->board = new Board(4);
+	this->board = new Board(8);
 	this->waiting_to_player = true;
 	this->init_start_board();
 }

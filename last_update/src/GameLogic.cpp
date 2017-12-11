@@ -77,11 +77,11 @@ int GameLogic::play_one_turn(Player* p1) {
 	vector<Point> start_points, end_points;
 	vector<int> flip_number;
 
-	cout << p1->getName() << " - '" << p1->getSymbol() << "' turn" <<endl;
+	cout << p1->getSymbol() << " - '" << p1->getSymbol() << "' turn" <<endl;
 	this->find_options(this->board,p1,start_points,end_points,flip_number);
 	//order all points to print
 	if (start_points.empty() == true) {
-		cout << "no available moves  GAMELOGIC line 84" << endl;
+		cout << "no available moves" << endl;
 		return 1;
 	}
 	//order all points in set (without duplicates)
@@ -95,7 +95,7 @@ int GameLogic::play_one_turn(Player* p1) {
 	 if (p1->get_type() == "PLAYER") {
 		 while(true){
 			 this->print_board(this->board);
-		 		cout << p1->getName() << " options are:";
+		 		cout << p1->getSymbol() << " options are:";
 		 		for (std::set<Point>::iterator it=s.begin(); it!=s.end(); ++it) {
 		 			cout << " " << *it;
 		 		}
@@ -106,7 +106,7 @@ int GameLogic::play_one_turn(Player* p1) {
 		 		int col = InputTest::get_index_from_user(this->board->get_size());
 		 		if (is_point_in_set(Point(row-1,col-1),s) == true) {
 		 			change_all_points(this->board,p1,Point(row-1,col-1),start_points,end_points,flip_number);
-		 			cout << p1->getName() << " Played Point: " << Point(row-1,col-1) <<endl;
+		 			cout << p1->getSymbol() << " Played Point: " << Point(row-1,col-1) <<endl;
 		 			break;
 		 		}
 		 		cout << "not good option - try again."<< endl;
