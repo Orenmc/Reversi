@@ -1,9 +1,0 @@
-ifstream myFILE;
-	myFILE.open("config.txt");
-	int port;
-	string ip;
-	myFILE>>ip;
-	cout<<ip<<endl;
-	myFILE>>port;
-	cout<<port<<endl;
-	this->players[0] = new RemotePlayer(ip.c_str(),port);
