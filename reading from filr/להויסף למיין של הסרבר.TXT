@@ -1,0 +1,6 @@
+ifstream myFILE;
+	myFILE.open("config.txt");
+	int port;
+	myFILE>>port;
+	cout<<port;
+	Server server(port);

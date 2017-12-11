@@ -8,7 +8,7 @@
 #include "../include/RemoteGameLogic.h"
 
 RemoteGameLogic::RemoteGameLogic() {
-	this->players[0] = new RemotePlayer("127.0.0.1", 8000);
+	this->players[0] = new RemotePlayer("127.0.0.1", 8001);
 	this->players[1] = new DummyPlayer();
 	this->board = new Board(4);
 	this->waiting_to_player = true;
