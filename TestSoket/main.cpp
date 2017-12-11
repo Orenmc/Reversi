@@ -10,7 +10,7 @@
 #include <stdlib.h>
 using namespace std;
 int main() {
-	Server server(8001);
+	Server server = Server();
 	try {
 		server.start();
 	} catch (const char *msg) {

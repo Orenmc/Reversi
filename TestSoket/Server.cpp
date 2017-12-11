@@ -13,11 +13,22 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include "Server.h"
+#include <fstream>
+
+#define END_OF_GAME -3
+#define DISCONNECTED -4
+#define NO_MOVE -1
+#define INIT -2
+#define FIRST_PLAYER 1
+#define SECONDE_PLAYER 2
 
 using namespace std;
 
 #define MAX_CONNECTED_CLIENTS 2
-Server::Server(int port): port(port), serverSocket(0) {
+Server::Server():port(0), serverSocket(0) {
+	ifstream myFILE;
+		myFILE.open("ServerConfig.txt");
+		myFILE>>port;
 	cout << "Server" << endl;
 }
 void Server::start() {
@@ -57,10 +68,9 @@ void Server::start() {
 
 		cout << "Client 1 connected" << endl;
 
-/*
-		int player1[2] = {1,0};
+
+		int player1[2] = {FIRST_PLAYER,0};
 		int n = write(clientSocket1, &player1, sizeof(player1));
-*/
 		// Accept a new client connection
 		int clientSocket2 = accept(serverSocket, (struct
 				sockaddr *)&clientAddress, &clientAddressLen);
@@ -69,19 +79,11 @@ void Server::start() {
 			throw "Error on accept";
 
 		cout << "Client 2 connected" << endl;
-/*
 
-		int player2[2] = {2,0};
+		int player2[2] = {SECONDE_PLAYER,0};
 		n = write(clientSocket2, &player2, sizeof(player2));
-*/
 
 		handleClients(clientSocket1,clientSocket2);
-
-		/*
-		// Close communication with the client
-		close(clientSocket1);
-		close(clientSocket2);
-		*/
 	}
 	while(true);
 
@@ -93,24 +95,23 @@ void Server::handleClients(int clientSocket1, int clientSocket2) {
 	int buf[2];
 	bool flag = true;
 	int n;
-	int first_connection[2] = {-2,-2};
-	int endGame[2]= {-3,-3};
+	int first_connection[2] = {INIT,INIT};
+	int endGame[2]= {END_OF_GAME,END_OF_GAME};
+	int disconnected[2] = {DISCONNECTED,DISCONNECTED};
 	int counter = 0;
-	char test;
 	while (true) {
 		// Read move from client and send to another client.
 
 		if (flag == true){
 			n = write(clientSocket1, &first_connection, sizeof(first_connection));
 			flag = false;
-		} else if (buf[0]== -1) {
+		} else if (buf[0]== NO_MOVE) {
 
 			if(counter == 1){
 				n = write(clientSocket1, &endGame, sizeof(endGame));
 				n = write(clientSocket2, &endGame, sizeof(endGame));
 				break;
 			} else {
-				cout << "player 1 check if he can play" << endl;
 				counter = 1;
 				n = write(clientSocket1, &buf, sizeof(buf));
 			}
@@ -120,25 +121,25 @@ void Server::handleClients(int clientSocket1, int clientSocket2) {
 		}
 		if (n == -1) {
 			cout << "Error write move to client1" << endl;
-			return;
+			break;
 		}
 		if (n == 0) {
 			cout << "Client1 disconnected" << endl;
-			return;
+			break;
 		}
 		//read from player 1
 		n = read(clientSocket1, &buf, sizeof(buf));
 		if (n == -1) {
 			cout << "Error reading move from client1" << endl;
-			return;
+			break;
 		}
 		if (n == 0) {
 			cout << "Client1 disconnected" << endl;
-			return;
+			n = write(clientSocket2, &disconnected, sizeof(disconnected));
+			break;
 		}
 
-		if(buf[0]== -1){
-
+		if(buf[0]== NO_MOVE ){
 			if(counter == 1){
 				n = write(clientSocket2, &endGame, sizeof(endGame));
 				n = write(clientSocket1, &endGame, sizeof(endGame));
@@ -155,11 +156,11 @@ void Server::handleClients(int clientSocket1, int clientSocket2) {
 		// Write the result back to the client
 		if (n == -1) {
 			cout << "Error writing move to client2" << endl;
-			return;
+			break;
 		}
 		if (n == 0) {
 			cout << "Client2 disconnected" << endl;
-			return;
+			break;
 		}
 
 
@@ -168,11 +169,12 @@ void Server::handleClients(int clientSocket1, int clientSocket2) {
 
 		if (n == -1) {
 			cout << "Error read move from client2" << endl;
-			return;
+			break;
 		}
 		if (n == 0) {
 			cout << "Client2 disconnected" << endl;
-			return;
+			n = write(clientSocket1, &disconnected, sizeof(disconnected));
+			break;
 		}
 
 	}
