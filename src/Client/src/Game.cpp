@@ -87,18 +87,11 @@ void Game::run() {
 	}
 	//end of while
 	end_of_game(gl);
-	startOrExit();
 }
 
 void Game::print_score(GameLogic* gameLogic) const {
-	/*
-// first player points
-	cout<< gameLogic->get_player(1)->getName() << " points: " <<gameLogic->player1_points()<< endl;
-// second player points
-	cout<< gameLogic->get_player(2)->getName() << " points: " << gameLogic->player2_points() << endl;
 
-	 */
-	cout << "X points: " << gameLogic->player1_points()<<endl;;
+	cout << "X points: " << gameLogic->player1_points()<<endl;
 	cout << "O points: " << gameLogic->player2_points()<<endl;
 }
 
@@ -113,25 +106,11 @@ void Game::end_of_game(GameLogic* gl) const {
 	if(points1 == points2){
 		cout << "Equal - no one wins"<<endl;
 	}else if(points1>points2){
-		cout <<"###### " << gl->get_player(1)->getSymbol()<< " WINS ######" <<endl;
+		cout <<"###### " << "X"<< " WINS ######" <<endl;
 	} else {
-		cout <<"###### " << gl->get_player(2)->getSymbol()<< " WINS ######" <<endl;
+		cout <<"###### " << "O"<< " WINS ######" <<endl;
 	}
 	print_score(gl);
+	cout<<"Thank you for playing Reversi"<<endl;
 }
 
-void Game::startOrExit() {
-	cout<<endl;
-	char symbol;
-	cout<<"Play Again - please press n and than Enter"<<endl;;
-	cout<<"Quit - please press q and than Enter"<<endl;;
-	cin>>symbol;
-	if(symbol != 'n') {
-		cout<<"Thank you for playing Reversi!"<<endl;;
-	}
-	if(symbol == 'n') {
-		delete gl;
-		init_game_logic();
-		run();
-	}
-}

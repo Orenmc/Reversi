@@ -21,24 +21,21 @@
 #define INIT -2
 #define FIRST_PLAYER 1
 #define SECONDE_PLAYER 2
+#define MAX_CONNECTED_CLIENTS 2
 
 using namespace std;
 
-#define MAX_CONNECTED_CLIENTS 2
 Server::Server():port(0), serverSocket(0) {
-	ifstream myFILE;
-	int test;
-		myFILE.open("./ServerConfig.txt");
+	ifstream Info;
+	Info.open("./ServerConfig.txt");
 
-		if(myFILE.is_open()){
-			myFILE>>port;
-		} else {
-			cout << "not opened" << endl;
-		}
-		/*
-		myFILE>>test;
-		cout << test << endl;
-		*/
+	if(Info.is_open()){
+		Info>>port;
+		Info.close();
+	} else {
+		cout << "Unable to open the file" << endl;
+	}
+
 	cout << "Server" << endl;
 }
 void Server::start() {
@@ -81,6 +78,9 @@ void Server::start() {
 
 		int player1[2] = {FIRST_PLAYER,0};
 		int n = write(clientSocket1, &player1, sizeof(player1));
+		if (n == -1) {
+			cout << "Error writing to client1" << endl;
+		}
 		// Accept a new client connection
 		int clientSocket2 = accept(serverSocket, (struct
 				sockaddr *)&clientAddress, &clientAddressLen);
@@ -92,10 +92,16 @@ void Server::start() {
 
 		int player2[2] = {SECONDE_PLAYER,0};
 		n = write(clientSocket2, &player2, sizeof(player2));
+		if (n == -1) {
+			cout << "Error writing to client2" << endl;
+		}
 
 		handleClients(clientSocket1,clientSocket2);
+		close(clientSocket1);
+		close(clientSocket2);
 	}
 	while(true);
+
 
 
 }
@@ -188,10 +194,6 @@ void Server::handleClients(int clientSocket1, int clientSocket2) {
 		}
 
 	}
-	 // "SERVER - only here close" << endl;
-	// Close communication with the client
-			close(clientSocket1);
-			close(clientSocket2);
 }
 
 void Server::stop() {

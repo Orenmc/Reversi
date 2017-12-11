@@ -14,11 +14,11 @@ RemoteGameLogic::RemoteGameLogic() {
 
 	myFILE.open("./ClientConfig.txt");
 	if(myFILE.is_open()) {
-		cout << "opened" << endl;
 		myFILE>>port;
 		myFILE>>ip;
+		myFILE.close();
 	} else {
-		cout << "not opened" << endl;
+		cout << "Unable to open the file" << endl;
 	}
 
 	this->players[0] = new RemotePlayer(ip.c_str(),port);
