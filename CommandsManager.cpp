@@ -7,13 +7,16 @@
 
 #include "CommandsManager.h"
 #include "PrintCommand.h"
+#include "StartCommand.h"
+#include "PlayCommand.h"
 
 CommandsManager::CommandsManager() {
 	commandsMap["print"] = new PrintCommand();
+	commandsMap["start"] = new StartCommand();
+	commandsMap["play"] = new PlayCommand();
 	// Add more commands...
 }
-void CommandsManager::executeCommand(string
-		command, vector<string> args) {
+void CommandsManager::executeCommand(string command, vector<string> args) {
 	Command *commandObj = commandsMap[command];
 	commandObj->execute(args);
 }
