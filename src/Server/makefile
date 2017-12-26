@@ -1,9 +1,11 @@
-# name
-# id
+# 305164295
 
-target: compileAll
-	g++ -o ../../exe/server.out *.o 
-	rm -f *.o
+# cohenorx
 
-compileAll: *.h *.cpp
-	g++ -c *.cpp
+a.out: Server.o main.o
+	g++ Server.o main.o
+Server.o: Server.cpp Server.h
+	g++ -c Server.cpp -pthread
+main.o: main.cpp Server.h
+	g++ -c main.cpp -pthread
+
