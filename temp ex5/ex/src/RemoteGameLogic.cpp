@@ -6,6 +6,12 @@
  */
 
 #include "../include/RemoteGameLogic.h"
+#include <string.h>
+#include <sstream>
+#include <iterator>
+#include <stdlib.h>
+#include <unistd.h>
+#define COMMAND_SIZE 50
 
 RemoteGameLogic::RemoteGameLogic() {
 	ifstream myFILE;
@@ -16,8 +22,9 @@ RemoteGameLogic::RemoteGameLogic() {
 	if(myFILE.is_open()) {
 		myFILE>>port;
 		myFILE>>ip;
+		myFILE.close();
 	} else {
-		cout << "not opened" << endl;
+		cout << "Unable to open the file" << endl;
 	}
 
 	this->players[0] = new RemotePlayer(ip.c_str(),port);
@@ -25,6 +32,10 @@ RemoteGameLogic::RemoteGameLogic() {
 	this->board = new Board(8);
 	this->waiting_to_player = true;
 	this->init_start_board();
+
+	connectAndCommand();	// start getting commandes
+
+
 }
 
 RemoteGameLogic::~RemoteGameLogic() {
@@ -126,9 +137,162 @@ int RemoteGameLogic::play_one_turn(Player* p1) {
 	rp->writeToServer(buffer);
 	return 0;
 }
+
+void RemoteGameLogic::connectAndCommand() {
+	char command[COMMAND_SIZE];
+
+	RemotePlayer* rp = dynamic_cast<RemotePlayer*>(players[0]);
+	while(true) {
+		do{
+			cout << "please enter command:"
+					<< endl << "1. start <name>" << endl << "2. join <name>" <<endl <<
+					"3. list_games" << endl << "4. close" << endl << endl;
+			cin.getline(command,COMMAND_SIZE);
+			vector<string> vcommand = commandToVector(command);
+			unsigned size =vcommand.size();
+			if((vcommand[0] == "close" && size == 1) ||
+					(vcommand[0] == "start" && size == 2) ||
+					(vcommand[0] == "list_games" && size == 1) ||
+					(vcommand[0] == "join" && size == 2)) {
+				break;
+			}
+			cout << "not valid command - try again." <<endl << endl;
+		} while(true);
+
+		vector<string> vcommand = commandToVector(command);
+		if(vcommand[0] == "close") {
+			return;
+		}
+		//accept valid command - sent to server
+
+		//connect to server
+		try {
+			rp->connectToServer();
+		} catch (const char* msg) {
+			cout << "failed connect to server reaseon: " << msg<< endl;
+			exit(-1);
+		}
+
+		rp->writeStringToServer(command);
+		rp->readStringFromServer(command);
+
+
+
+		if(vcommand[0]=="list_games") {
+			if(strcmp(command,"") == 0){
+				cout << endl << "There are no exists games." << endl << endl;
+			} else {
+				print_list_games(command);
+			}
+
+		} else if(vcommand[0] == "start") {
+
+			if(strcmp(command,"notgood") == 0) {
+				cout << "Game is already exist - please try again." << endl << endl;
+			} else {
+				play_start_game();
+			}
+		} else if(vcommand[0] == "join"){
+
+			if(strcmp(command,"notgood") == 0) {
+				cout << "Game isn't exist - please try again." << endl << endl;
+			} else {
+
+				play_join_game();
+			}
+		}
+		close(rp->getClientSocket());
+	}
+
+	/*
+	} else if(vstrings[0] == "join") {
+		rp->writeStringToServer(str);
+		vector<string> answer = rp->readStringFromServer();
+		if(answer[0] == "notgood") {
+			cout << "game not exist" << endl;
+		} else if(answer[0] == "good") {
+			play_join_game();
+
+		}
+	}
+	cout << "finished 1 loop" << endl;
+}
+	 */
+}
+
 void RemoteGameLogic::change_players(){
 	this->players[0]->set_name("player_1");
 	this->players[0]->set_symbol('X');
 	this->players[1]->set_name("player_2");
 	this->players[1]->set_symbol('O');
 }
+
+void RemoteGameLogic::print_list_games(char* str) {
+	vector<string> vcommand = commandToVector(str);
+	unsigned size = vcommand.size();
+
+	cout << endl<<  "Game List: " << endl;
+	for(int i = 0; (unsigned)i < vcommand.size(); i++){
+		cout << i+1 << ". " << vcommand[i]<< endl;
+	}
+	cout << endl;
+}
+
+vector<string> RemoteGameLogic::commandToVector(char* str) {
+	stringstream ss(str);
+	istream_iterator<string> begin(ss);
+	istream_iterator<string> end;
+	vector<string> vcommand(begin, end);
+	return vcommand;
+}
+
+void RemoteGameLogic::play_start_game() {
+	char str[COMMAND_SIZE];
+	int x,y;
+
+	cout << endl << "Waiting for another player to connect! " << endl;
+	change_players(); // change name and symbol of players - player[0] is still my remote player
+
+	RemotePlayer* rp = dynamic_cast<RemotePlayer*>(players[0]);
+
+	rp->readStringFromServer(str);
+	rp->readStringFromServer(str);
+
+	cout << "other player connected" << endl;
+
+	int buff[2];
+	while(true){
+		cout << "eneter x y" << endl;
+		cin >> buff[0] >> buff[1];
+		rp->writeToServer(buff);
+		rp->readFromServer(buff);
+		cout << "start player: " << buff[0] << " , " << buff[1]<< endl;
+
+	}
+
+
+}
+void RemoteGameLogic::play_join_game() {
+
+	RemotePlayer* rp = dynamic_cast<RemotePlayer*>(players[0]);
+	cout << "entered play join player" << endl;
+
+	int buff[2];
+
+
+	while(true){
+		rp->readFromServer(buff);
+
+		cout << "start player: " << buff[0] << " , " << buff[1]<< endl;
+		cout << "eneter x y" << endl;
+		cin >> buff[0] >> buff[1];
+		rp->writeToServer(buff);
+	}
+	/*
+	cout <<"Start Game:" << endl;
+	print_board();
+	cout <<"Player "<< rp->getName() << " has " << player2_points() << " points" << endl;
+	 */
+
+}
+

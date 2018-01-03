@@ -10,12 +10,19 @@
 
 #include <vector>
 #include <string>
+#include "GameRoom.h"
+#include <unistd.h>
 using namespace std;
+#include <pthread.h>
+
+
 class Command {
+
 public:
 
-	virtual void execute(vector<string> args) = 0;
+	virtual void execute(vector<string> args,vector<GameRoom> &GR,pthread_mutex_t lock,int socket = 0) = 0;
 	virtual ~Command() {}
+
 };
 
 

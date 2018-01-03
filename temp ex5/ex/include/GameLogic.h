@@ -18,6 +18,7 @@
 #include "InputTest.h"
 #include "DummyPlayer.h"
 #include "RemotePlayer.h"
+#include <string>
 
 class GameLogic {
 public:

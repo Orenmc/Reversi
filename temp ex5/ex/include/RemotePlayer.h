@@ -10,6 +10,7 @@
 
 #include "Player.h"
 #include <fstream>
+#include <vector>
 
 class RemotePlayer: public Player {
 public:
@@ -20,6 +21,10 @@ public:
 	void sendNumber();
 	void readFromServer(int buf[]);
 	void writeToServer(int buf[]);
+	int getClientSocket() const;
+	void writeStringToServer(char *str);
+	void readStringFromServer(char*str);
+
 
 private:
 	const char *serverIP;

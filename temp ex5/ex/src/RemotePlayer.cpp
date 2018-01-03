@@ -14,19 +14,17 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <sstream>
+#include <iterator>
+#include <vector>
 using namespace std;
+#define COMMAND_SIZE 50
 
-
+pthread_mutex_t printmutex;
 
 RemotePlayer::RemotePlayer(const char *serverIP, int serverPort):Player("player_2",'O'),
 		serverIP("127.0.0.1"), serverPort(8000), clientSocket(0) {
-	try {
-		connectToServer();
-		sendNumber();/////////////////////////////////////////////////////////////
-	} catch (const char *msg) {
-		cout << "Failed to connect to server. Reason:" << msg << endl;
-		exit(-1);
-	}
+
 }
 
 RemotePlayer::~RemotePlayer() {
@@ -67,20 +65,9 @@ void RemotePlayer::connectToServer() {
 	if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1) {
 		throw "Error connecting to server";
 	}
-	cout << "Connected to server" << endl;
 
+//	cout << "Connected to server" << endl;
 
-	int buffer[2];
-	int n = read(clientSocket, &buffer, sizeof(buffer));
-	cout<<"----------------"<<endl;
-	if(buffer[0] == 1){
-		cout<<"You are the first player to connect - player 'X'"<<endl;
-		cout <<"Waiting for other player to join..."<< endl;
-	} else if(buffer[0] == 2){
-		cout<<"You are the second player to connect - player 'O'"<<endl;
-		cout<< "waiting for opponent plays..." <<endl;
-	}
-	cout<<"----------------"<<endl;
 
 }
 
@@ -112,14 +99,29 @@ void RemotePlayer::writeToServer(int buf[]) {
 	}
 
 }
-void RemotePlayer::sendNumber() {
-	char str[100];
-	string s;
+
+int RemotePlayer::getClientSocket() const {
+	return clientSocket;
+}
+
+void RemotePlayer::writeStringToServer(char* str) {
+	char str1[100];
+	strcpy(str1,str);
+	int n = write(clientSocket, &str1,sizeof(str1));
+}
+
+void RemotePlayer::readStringFromServer(char* str) {
+	char command[COMMAND_SIZE] = "---";
+	vector<string> vgs2;
 	// Write the exercise arguments to the socket
 
-	cout << "enter a string (start/join/list_games) " << endl;
-	cin.getline(str,100);
-	cout << "sizeof is : " << sizeof(str)<< " strlen: " << strlen(str) << endl;
-	int n = write(clientSocket, &str,strlen(str) +1);
+	int n = read(clientSocket, &command,COMMAND_SIZE);
 
+	if (n == -1) {
+		cout << "Error reading move from client1" << endl;
+	}
+	if (n == 0) {
+		cout << "Client1 disconnected" << endl;
+	}
+	strcpy(str,command);
 }

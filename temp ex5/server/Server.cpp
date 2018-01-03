@@ -14,40 +14,35 @@
 #include <sys/socket.h>
 #include "Server.h"
 #include <fstream>
-////////////////////////////
-#include <iostream>
 #include <pthread.h>
-#include <cstdlib>
-#include "CommandsManager.h"
-#include <algorithm>
 #include <sstream>
-#include <istream>
 #include <iterator>
-#define THREADS_NUM 5
+#include <string.h>
+#include <string>
+#include "CommandsManager.h"
 
-struct Args {
-	int sid1;
-};
-struct GameStruct {
-	int sid1;
-	int sid2;
-	string name;
-	int counter;
-};
-////////////////////////////////////
 #define END_OF_GAME -3
 #define DISCONNECTED -4
 #define NO_MOVE -1
 #define INIT -2
 #define FIRST_PLAYER 1
 #define SECONDE_PLAYER 2
-#define MAX_CONNECTED_CLIENTS 2
+#define MAX_CONNECTED_CLIENTS 10
 
-GameStruct gs[6];
-pthread_t global_thread[6];
+
+static void* handle_one_client(void* socketId);
+static void* acceptClients(void*);
+vector<pthread_t> vThreads;
+pthread_mutex_t print;
+pthread_mutex_t add_thread;
+#define COMMAND_SIZE 20
+
+
+
 using namespace std;
 
-Server::Server():port(0), serverSocket(0) {
+
+Server::Server():port(0), serverSocket(0), serverThreadId(0){
 	ifstream Info;
 	Info.open("./ServerConfig.txt");
 
@@ -57,20 +52,10 @@ Server::Server():port(0), serverSocket(0) {
 	} else {
 		cout << "Unable to open the file" << endl;
 	}
-	//initalized gs.counter = 0
-	for(int i = 0; i<6;i++){
-		gs[i].counter=0;
-	}
+
 	cout << "Server" << endl;
 }
 void Server::start() {
-
-	Args args[3];
-	pthread_t t[10];
-
-	int i = 0;
-
-
 	// Create a socket point
 	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (serverSocket == -1) {
@@ -90,231 +75,120 @@ void Server::start() {
 
 	// Start listening to incoming connections
 	listen(serverSocket, MAX_CONNECTED_CLIENTS);
+	pthread_create(&serverThreadId,NULL,&acceptClients,(void*)(intptr_t)serverSocket);
+
+}
+static void* acceptClients(void* socket) {
+	long serverSocket = (long) socket;
 
 	// Define the client socket's structures
 	struct sockaddr_in clientAddress;
-	socklen_t clientAddressLen;
+	socklen_t clientAddressLen ;//= sizeof(clientAddress);
 
-
-	cout << "Waiting for client connections..." << endl;
-	//########################################################################3//
-	// Accept a new client connection
 	do{
-	int clientSocket1 = accept(serverSocket, (struct
-			sockaddr *)&clientAddress, &clientAddressLen);
+		cout << "Waiting for client connections..." << endl;
+		// Accept a new client connection
 
-	if (clientSocket1 == -1)
-		throw "Error on accept";
-
-	cout << "Client 1 connected" << endl;
-	int player1[2] = {FIRST_PLAYER,0};
-	int n = write(clientSocket1, &player1, sizeof(player1));
-	if (n == -1) {
-		cout << "Error writing to client1" << endl;
-	}
-
-	args[i].sid1 = clientSocket1;
-/*
-	int clientSocket2 = accept(serverSocket, (struct
-			sockaddr *)&clientAddress, &clientAddressLen);
-
-	if (clientSocket1 == -1)
-		throw "Error on accept";
-	int player2[2] = {SECONDE_PLAYER,0};
-	n = write(clientSocket2, &player2, sizeof(player2));
-	if (n == -1) {
-		cout << "Error writing to client2" << endl;
-	}
-
-	cout << "Client 2 connected" << endl;
-	args[i].sid2 = clientSocket2;
-*/
-
-	int rc = pthread_create(&t[i],NULL,handle,&args[i]);
-	cout << "Server " << i << endl;
-	i++;
-	/*
-		int rc = pthread_create(&threads[i],NULL,printHello,(void *)i);
-		if(rc) {
-			cout << "bla bla" << endl;
-			exit(-1);
-		}
-	 */
-	/*
-		//Accept a new client connection
-		int clientSocket2 = accept(serverSocket, (struct
+		int clientSocket = accept(serverSocket, (struct
 				sockaddr *)&clientAddress, &clientAddressLen);
 
-		if (clientSocket2 == -1)
+		if (clientSocket == -1){
 			throw "Error on accept";
-
-		cout << "Client 2 connected" << endl;
-
-		int player2[2] = {SECONDE_PLAYER,0};
-		n = write(clientSocket2, &player2, sizeof(player2));
-		if (n == -1) {
-			cout << "Error writing to client2" << endl;
 		}
-	 */
-	//	handleClients(clientSocket1,clientSocket2);
-	//close(clientSocket1);
-	//close(clientSocket2);
 
+		cout << "Client  connected" << endl;
 
-	} while(true);
+		pthread_mutex_lock(&add_thread);
+		pthread_t t;
+	//	vThreads.push_back(t);
+		pthread_mutex_unlock(&add_thread);
+		////////////////////int rc = pthread creat
+		pthread_create(&t,NULL,handle_one_client,(void*)(intptr_t)clientSocket);
 
-
+		//close(clientSocket);
+	}
+	while(true);
 
 }
 
-void* Server::handle(void * args) {
+static void* handle_one_client(void *socketId) {
 
-	struct Args * args1 = (struct Args *) args;
-//	CommandsManager cm = CommandsManager();
-	char str1[100];
-
-
-	int n = read(args1->sid1, &str1, sizeof(str1));
+	long clientSocket = (long)socketId;
+	char command[COMMAND_SIZE];
 
 
-	if (n == -1) {
-		cout << "Error read move from client1" << endl;
+	int n = read(clientSocket, &command, sizeof(command));
+	if(n==0) {
+		cout << "bla" << endl;
 	}
-	if (n == 0) {
-		cout << "Client2 disconnected" << endl;
-	}
-/*
-	long tid = (long)(args1->id);
-	cout << "Hello world. It's me, thread "<< tid << endl;
-	cout << "string is: " << str1 << "size of" << sizeof(str1) << "strlen : "
-			<< strlen(str1) << endl;
-*/
-	stringstream ss(str1);
+	cout << "test: " << command << endl;
+
+
+	stringstream ss(command);
 	istream_iterator<string> begin(ss);
 	istream_iterator<string> end;
-	vector<string> vstrings(begin, end);
-	//copy(vstrings.begin(), vstrings.end(), ostream_iterator<string>(cout, "\n"));
+	vector<string> vCommand(begin, end);
 
 
-
-	//cout << str1 << endl;
-	int i;
-	if(vstrings[0] == "start"){
-		for(i =0; i< 6 ; i++){
-			if(gs[i].counter == 0){
-				gs[i].counter=1;
-				gs[i].name=vstrings[1];
-				gs[i].sid1 = args1->sid1;
-				break;
-			}
-		}
-		cout << "start to room - " <<i << endl;
+	CommandsManager::getInstance()->executeCommand(vCommand[0],vCommand,clientSocket);
+	return (void*)2;
+/*
 
 	} else if(vstrings[0] == "join") {
-		for(i =0; i< 6 ; i++){
-			if(gs[i].name == vstrings[1]){
-				gs[i].counter=2;
-				gs[i].sid2 = args1->sid1;
+		bool flag = false;
+		char str[10];
+		int i;
+		for (i =0 ; (unsigned) i < vGs.size(); i++) {
+			if(vGs[i].counter ==1 && vGs[i].name == vstrings[1]) {
+				flag = true;
+				vGs[i].sid2 = clientSocket;
+				vGs[i].counter =2;
 				break;
 			}
 		}
-		cout << "join to thread : "<< i << "name: " << gs[i].name<< endl;
-		pthread_create(&global_thread[i],NULL,handleClients,&gs[i]);
-
-
-///////////////////////////////////////////////////////////
-	} else if(vstrings[0] == "list_games") {
-		for(int i = 0; i < 6; i++){
-			if(gs[i].counter ==1) {
-				cout << "game name is: " << gs[i].name << " in room: " << i << endl;
-			}
+		if(flag == true) {
+			strcpy(str,"good");
+			n = write(clientSocket, &str, strlen(str) + 1);
+			strcpy(str1,"connect");
+			n = write(vGs[i].sid1, &str1, strlen(str1) + 1);
+			handleClients(vGs[i].sid1,vGs[i].sid2);
+		} else {
+			strcpy(str,"notgood");
+			n = write(clientSocket, &str, strlen(str) + 1);
 		}
+
 	}
 
+	 */
 }
 
+
+
+
+
+
 // Handle requests from a specific client
-void* Server::handleClients(void * args) {
+void Server::handleClients(int clientSocket1, int clientSocket2) {
 
-	struct GameStruct * gs1 = (struct GameStruct *) args;
-	int clientSocket1 = gs1->sid1;
-	int clientSocket2 = gs1->sid2;
+	cout << "entered handle 2 clients" << endl;
 	int n;
-	/*
-	int player1[2] = {FIRST_PLAYER,0};
-	int n = write(clientSocket1, &player1, sizeof(player1));
-	if (n == -1) {
-		cout << "Error writing to client1" << endl;
-	}
-
-	int player2[2] = {SECONDE_PLAYER,0};
-	n = write(clientSocket2, &player2, sizeof(player2));
-	if (n == -1) {
-		cout << "Error writing to client2" << endl;
-	}
-	 */
-
 	int buf[2];
-	bool flag = true;
-
-	int first_connection[2] = {INIT,INIT};
-	int endGame[2]= {END_OF_GAME,END_OF_GAME};
-	int disconnected[2] = {DISCONNECTED,DISCONNECTED};
-	int counter = 0;
 	while (true) {
-		// Read move from client and send to another client.
 
-		if (flag == true){
-			n = write(clientSocket1, &first_connection, sizeof(first_connection));
-			flag = false;
-		} else if (buf[0]== NO_MOVE) {
-
-			if(counter == 1){
-				n = write(clientSocket1, &endGame, sizeof(endGame));
-				n = write(clientSocket2, &endGame, sizeof(endGame));
-				break;
-			} else {
-				counter = 1;
-				n = write(clientSocket1, &buf, sizeof(buf));
-			}
-		} else {
-			counter = 0;
-			n = write(clientSocket1, &buf, sizeof(buf));
-		}
-		if (n == -1) {
-			cout << "Error write move to client1" << endl;
-			break;
-		}
-		if (n == 0) {
-			cout << "Client1 disconnected" << endl;
-			break;
-		}
 		//read from player 1
+		cout << "read from 1 client:" << endl;
 		n = read(clientSocket1, &buf, sizeof(buf));
-
 		if (n == -1) {
 			cout << "Error reading move from client1" << endl;
 			break;
 		}
 		if (n == 0) {
 			cout << "Client1 disconnected" << endl;
-			n = write(clientSocket2, &disconnected, sizeof(disconnected));
 			break;
 		}
 
-		if(buf[0]== NO_MOVE ){
-			if(counter == 1){
-				n = write(clientSocket2, &endGame, sizeof(endGame));
-				n = write(clientSocket1, &endGame, sizeof(endGame));
-				break;
-			} else {
-				counter = 1;
-				n = write(clientSocket2, &buf, sizeof(buf));
-			}
-		} else {
-			counter = 0;
-			n = write(clientSocket2, &buf, sizeof(buf));
-		}
+		n = write(clientSocket2, &buf, sizeof(buf));
+
 		// Write the result back to the client
 		if (n == -1) {
 			cout << "Error writing move to client2" << endl;
@@ -325,8 +199,6 @@ void* Server::handleClients(void * args) {
 			break;
 		}
 
-
-
 		n = read(clientSocket2, &buf, sizeof(buf));
 
 		if (n == -1) {
@@ -335,105 +207,16 @@ void* Server::handleClients(void * args) {
 		}
 		if (n == 0) {
 			cout << "Client2 disconnected" << endl;
-			n = write(clientSocket1, &disconnected, sizeof(disconnected));
 			break;
 		}
+		n = write(clientSocket1, &buf, sizeof(buf));
+
 
 	}
 }
 
 void Server::stop() {
+	pthread_cancel(serverThreadId);
 	close(serverSocket);
+	cout << "server stop" << endl;
 }
-/*
-void Server::handleClients(int clientSocket1, int clientSocket2) {
-
-	int buf[2];
-	bool flag = true;
-	int n;
-
-	int first_connection[2] = {INIT,INIT};
-	int endGame[2]= {END_OF_GAME,END_OF_GAME};
-	int disconnected[2] = {DISCONNECTED,DISCONNECTED};
-	int counter = 0;
-	while (true) {
-		// Read move from client and send to another client.
-
-		if (flag == true){
-			n = write(clientSocket1, &first_connection, sizeof(first_connection));
-			flag = false;
-		} else if (buf[0]== NO_MOVE) {
-
-			if(counter == 1){
-				n = write(clientSocket1, &endGame, sizeof(endGame));
-				n = write(clientSocket2, &endGame, sizeof(endGame));
-				break;
-			} else {
-				counter = 1;
-				n = write(clientSocket1, &buf, sizeof(buf));
-			}
-		} else {
-			counter = 0;
-			n = write(clientSocket1, &buf, sizeof(buf));
-		}
-		if (n == -1) {
-			cout << "Error write move to client1" << endl;
-			break;
-		}
-		if (n == 0) {
-			cout << "Client1 disconnected" << endl;
-			break;
-		}
-		//read from player 1
-		n = read(clientSocket1, &buf, sizeof(buf));
-		if (n == -1) {
-			cout << "Error reading move from client1" << endl;
-			break;
-		}
-		if (n == 0) {
-			cout << "Client1 disconnected" << endl;
-			n = write(clientSocket2, &disconnected, sizeof(disconnected));
-			break;
-		}
-
-		if(buf[0]== NO_MOVE ){
-			if(counter == 1){
-				n = write(clientSocket2, &endGame, sizeof(endGame));
-				n = write(clientSocket1, &endGame, sizeof(endGame));
-				break;
-			} else {
-				counter = 1;
-				n = write(clientSocket2, &buf, sizeof(buf));
-			}
-		} else {
-			counter = 0;
-			n = write(clientSocket2, &buf, sizeof(buf));
-		}
-
-		// Write the result back to the client
-		if (n == -1) {
-			cout << "Error writing move to client2" << endl;
-			break;
-		}
-		if (n == 0) {
-			cout << "Client2 disconnected" << endl;
-			break;
-		}
-
-
-
-		n = read(clientSocket2, &buf, sizeof(buf));
-
-		if (n == -1) {
-			cout << "Error read move from client2" << endl;
-			break;
-		}
-		if (n == 0) {
-			cout << "Client2 disconnected" << endl;
-			n = write(clientSocket1, &disconnected, sizeof(disconnected));
-			break;
-		}
-
-	}
-}
-*/

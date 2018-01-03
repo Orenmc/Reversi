@@ -10,14 +10,21 @@
 
 #include <map>
 #include "Command.h"
+#include "GameRoom.h"
 
 class CommandsManager {
 public:
-	CommandsManager();
-	~CommandsManager();
-
-	void executeCommand(string command,vector<string> args);
+	static CommandsManager* getInstance();
+	void executeCommand(string command,vector<string> args, int socket = 0);
 private:
+	CommandsManager();
+	CommandsManager(const CommandsManager &);
+	~CommandsManager();
+	static CommandsManager* instance;
+	static pthread_mutex_t lock;
+	static pthread_mutex_t GR_lock;
+
+	vector<GameRoom> vGR;
 	map<string, Command *> commandsMap;
 };
 

@@ -9,25 +9,18 @@
 #include <iostream>
 #include <stdlib.h>
 using namespace std;
-
-#include <pthread.h>
-#include <cstdlib>
-
-using namespace std;
-#define THREADS_NUM 5
-
-
-
-
 int main() {
 	Server server = Server();
-
 	try {
 		server.start();
+		cout << "Enter exit to stop server" << endl;
+		string str;
+		cin >> str;
+		if(str == "exit") {
+			server.stop();
+		}
 	} catch (const char *msg) {
 		cout << "Cannot start server. Reason: " << msg << endl;
 		exit(-1);
 	}
 }
-
-

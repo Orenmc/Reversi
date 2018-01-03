@@ -6,20 +6,48 @@
  */
 
 #include "CommandsManager.h"
-#include "PrintCommand.h"
+#include "GameRoom.h"
+#include "ListGameCommand.h"
 #include "StartCommand.h"
-#include "PlayCommand.h"
+#include "JoinCommand.h"
+
+
+
+
+CommandsManager* CommandsManager::instance = 0;
+pthread_mutex_t CommandsManager::lock;
+pthread_mutex_t CommandsManager::GR_lock;
+
+CommandsManager* CommandsManager::getInstance() {
+	if (instance == 0) {
+		pthread_mutex_lock(&lock);
+		if (instance == 0) {
+			instance = new CommandsManager();
+		}
+		pthread_mutex_unlock(&lock);
+	}
+	return instance;
+}
 
 CommandsManager::CommandsManager() {
-	commandsMap["print"] = new PrintCommand();
+	commandsMap["list_games"] = new ListGamesCommand();
 	commandsMap["start"] = new StartCommand();
-	commandsMap["play"] = new PlayCommand();
+	commandsMap["join"] = new JoinCommand();
+
+
 	// Add more commands...
 }
-void CommandsManager::executeCommand(string command, vector<string> args) {
+
+
+void CommandsManager::executeCommand(string command, vector<string> args, int socket) {
+
 	Command *commandObj = commandsMap[command];
-	commandObj->execute(args);
+	commandObj->execute(args,this->vGR,GR_lock,socket);
 }
+
+CommandsManager::CommandsManager(const CommandsManager&) {
+}
+
 CommandsManager::~CommandsManager() {
 	map<string, Command *>::iterator it;
 	for (it = commandsMap.begin(); it !=

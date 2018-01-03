@@ -5,7 +5,7 @@
 
 a.out: compileAll
 	g++ *.o 
-	rm -f *.o
+#	rm -f *.o
 
 compileAll: include/*.h src/*.cpp
 	g++ -Iinclude/ -c -g src/*.cpp
